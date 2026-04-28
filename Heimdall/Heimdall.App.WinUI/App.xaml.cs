@@ -1,4 +1,5 @@
-﻿using Heimdall.Infrastructure.Matching;
+﻿using Heimdall.Infrastructure.Export;
+using Heimdall.Infrastructure.Matching;
 using Heimdall.Infrastructure.Bragi;
 using Heimdall.BragiCore.Extraction;
 using Heimdall.BragiCore.Export;
@@ -109,6 +110,10 @@ public partial class App : Microsoft.UI.Xaml.Application
                 services.AddSingleton<ICategoryFileDetector, CategoryFileDetector>();
                 services.AddSingleton<ISubjectListFolderReader, SubjectListFolderReader>();
                 services.AddSingleton<IBookCategoryMatcher, BookCategoryMatcher>();
+                services.AddSingleton<IEmailPreviewBuilder, EmailPreviewBuilder>();
+                services.AddSingleton<IHtmlEmailRenderer, HtmlEmailRenderer>();
+                services.AddSingleton<IRunSummaryService, RunSummaryService>();
+                services.AddSingleton<IHtmlExportService, HtmlExportService>();
 
                 services.AddSingleton<WizardSessionStore>();
                 services.AddSingleton<IWorkflowOrchestrator, WorkflowOrchestrator>();
@@ -170,6 +175,7 @@ public partial class App : Microsoft.UI.Xaml.Application
         _window.Activate();
     }
 }
+
 
 
 

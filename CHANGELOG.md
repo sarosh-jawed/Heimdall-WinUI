@@ -6,6 +6,13 @@ All notable changes to Heimdall WinUI will be documented in this file.
 
 ### Added
 
+- Added complete non-UI workflow orchestration.
+- Expanded wizard session state to store CSV results, subject-list results, preview results, and removed book selections.
+- Added email preview building from category match results.
+- Added HTML rendering for category and CannotSort email files.
+- Added HTML export service and run summary text generation.
+- Added workflow tests for CSV loading, fresh Bragi generation, existing folder loading, preview building, removal behavior, export, cancellation, and error logging.
+
 - Added book-to-category matching for selected broad categories.
 - Added exact normalized subject-heading matching.
 - Added multi-category book matching without first-match-wins behavior.
@@ -41,6 +48,7 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Documented confirmed MVP requirements.
 - Documented planned clean architecture.
 - Documented initial testing and release strategy.
+
 
 
 
