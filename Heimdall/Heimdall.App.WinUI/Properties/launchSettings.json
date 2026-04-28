@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Heimdall.App.WinUI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Heimdall.App.WinUI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+<Solution>
+  <Configurations>
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Heimdall.App.WinUI/Heimdall.App.WinUI.csproj">
+    <Platform Solution="*|ARM64" Project="ARM64" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+    <Deploy />
+  </Project>
+  <Project Path="Heimdall.Application/Heimdall.Application.csproj" />
+  <Project Path="Heimdall.BragiCore/Heimdall.BragiCore.csproj" />
+  <Project Path="Heimdall.Domain/Heimdall.Domain.csproj" />
+  <Project Path="Heimdall.Infrastructure/Heimdall.Infrastructure.csproj" />
+  <Project Path="Heimdall.Tests/Heimdall.Tests.csproj" />
+</Solution>

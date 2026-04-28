@@ -11,7 +11,7 @@ The application should not be a direct copy of the legacy console utility. The l
 Heimdall-WinUI/
 │
 ├── Heimdall/
-│   ├── Heimdall.sln
+│   ├── Heimdall.slnx
 │   ├── Heimdall.App.WinUI/
 │   ├── Heimdall.Domain/
 │   ├── Heimdall.Application/
