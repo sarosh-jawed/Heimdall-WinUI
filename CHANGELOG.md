@@ -6,6 +6,13 @@ All notable changes to Heimdall WinUI will be documented in this file.
 
 ### Added
 
+- Added book-to-category matching for selected broad categories.
+- Added exact normalized subject-heading matching.
+- Added multi-category book matching without first-match-wins behavior.
+- Added CannotSort handling for books with missing or unmatched subjects.
+- Added matching tests for category assignment, multi-match behavior, case-insensitive matching, whitespace normalization, and duplicate subject handling.
+- Cleaned nullable warnings in CSV reading and Bragi category file detection.
+
 - Added existing Bragi output folder mode.
 - Added category file detection for Bragi subject-list files.
 - Added subject-list folder reading with trimming and deduplication.
@@ -34,6 +41,7 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Documented confirmed MVP requirements.
 - Documented planned clean architecture.
 - Documented initial testing and release strategy.
+
 
 
 

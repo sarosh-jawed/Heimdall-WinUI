@@ -1,4 +1,5 @@
-﻿using Heimdall.Infrastructure.Bragi;
+﻿using Heimdall.Infrastructure.Matching;
+using Heimdall.Infrastructure.Bragi;
 using Heimdall.BragiCore.Extraction;
 using Heimdall.BragiCore.Export;
 using Heimdall.BragiCore.Configuration;
@@ -107,6 +108,7 @@ public partial class App : Microsoft.UI.Xaml.Application
                 services.AddSingleton<IBragiSubjectListGenerator, BragiSubjectListGenerator>();
                 services.AddSingleton<ICategoryFileDetector, CategoryFileDetector>();
                 services.AddSingleton<ISubjectListFolderReader, SubjectListFolderReader>();
+                services.AddSingleton<IBookCategoryMatcher, BookCategoryMatcher>();
 
                 services.AddSingleton<WizardSessionStore>();
                 services.AddSingleton<IWorkflowOrchestrator, WorkflowOrchestrator>();
@@ -168,6 +170,7 @@ public partial class App : Microsoft.UI.Xaml.Application
         _window.Activate();
     }
 }
+
 
 
 

@@ -31,7 +31,16 @@ public sealed class CategoryFileDetector : ICategoryFileDetector
 
         var filesByName = Directory
             .EnumerateFiles(subjectListFolder, "*Subjects.txt", SearchOption.TopDirectoryOnly)
-            .ToDictionary(Path.GetFileName, StringComparer.OrdinalIgnoreCase);
+            .Select(filePath => new
+            {
+                FileName = Path.GetFileName(filePath),
+                FilePath = filePath
+            })
+            .Where(file => !string.IsNullOrWhiteSpace(file.FileName))
+            .ToDictionary(
+                file => file.FileName!,
+                file => file.FilePath,
+                StringComparer.OrdinalIgnoreCase);
 
         var detectedCategories = new List<CategoryDefinition>();
         var missingExpectedFiles = new List<string>();
@@ -70,7 +79,7 @@ public sealed class CategoryFileDetector : ICategoryFileDetector
     }
 
     private static void AddUnknownSubjectFiles(
-        IEnumerable<string?> fileNames,
+        IEnumerable<string> fileNames,
         ICollection<CategoryDefinition> detectedCategories)
     {
         var existingFileNames = detectedCategories
@@ -79,7 +88,7 @@ public sealed class CategoryFileDetector : ICategoryFileDetector
 
         foreach (var fileName in fileNames.Where(name => !string.IsNullOrWhiteSpace(name)))
         {
-            if (fileName is null || existingFileNames.Contains(fileName))
+            if (existingFileNames.Contains(fileName))
             {
                 continue;
             }
