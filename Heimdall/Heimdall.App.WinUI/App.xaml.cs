@@ -1,48 +1,151 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using Heimdall.Application.Configuration;
+using Heimdall.Application.Contracts;
+using Heimdall.Application.Workflow;
+using Heimdall.Infrastructure.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Shapes;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using Serilog;
 
 namespace Heimdall.App.WinUI;
+
 /// <summary>
-/// Provides application-specific behavior to supplement the default Application class.
+/// Application startup for the Heimdall WinUI desktop app.
+/// This class owns configuration loading, dependency injection, and application-level logging.
 /// </summary>
-public partial class App : Application
+public partial class App : Microsoft.UI.Xaml.Application
 {
+    private IHost? _host;
     private Window? _window;
 
-    /// <summary>
-    /// Initializes the singleton application object.  This is the first line of authored code
-    /// executed, and as such is the logical equivalent of main() or WinMain().
-    /// </summary>
     public App()
     {
         InitializeComponent();
+
+        AppDomain.CurrentDomain.ProcessExit += (_, _) =>
+        {
+            Log.CloseAndFlush();
+            _host?.Dispose();
+        };
     }
 
-    /// <summary>
-    /// Invoked when the application is launched.
-    /// </summary>
-    /// <param name="args">Details about the launch request and process.</param>
-    protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+    protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        _window = new MainWindow();
+        try
+        {
+            _host = CreateHost();
+            _host.Start();
+
+            ILogger<App> logger = _host.Services.GetRequiredService<ILogger<App>>();
+            logger.LogInformation("Application started");
+            logger.LogInformation("Config loaded");
+            logger.LogInformation("Services registered");
+
+            _window = _host.Services.GetRequiredService<MainWindow>();
+            _window.Activate();
+        }
+        catch (Exception ex)
+        {
+            ShowStartupFailure(ex);
+        }
+    }
+
+    private static IHost CreateHost()
+    {
+        var configPath = Path.Combine(AppContext.BaseDirectory, "config.json");
+
+        var configLoader = new HeimdallConfigLoader();
+        var config = configLoader.Load(configPath);
+
+        var configValidator = new HeimdallConfigValidator();
+        configValidator.ValidateAndThrow(config);
+
+        var logFolder = ResolveLogFolder(config);
+        Directory.CreateDirectory(logFolder);
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .WriteTo.File(
+                Path.Combine(logFolder, config.Logging.LogFileNameTemplate),
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: config.Logging.RetainedFileCountLimit,
+                shared: true)
+            .CreateLogger();
+
+        return Host.CreateDefaultBuilder()
+            .ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.AddSerilog(Log.Logger, dispose: false);
+            })
+            .ConfigureServices(services =>
+            {
+                services.AddSingleton(config);
+                services.AddSingleton<IHeimdallConfigLoader, HeimdallConfigLoader>();
+                services.AddSingleton<IHeimdallConfigValidator, HeimdallConfigValidator>();
+
+                services.AddSingleton<WizardSessionStore>();
+                services.AddSingleton<IWorkflowOrchestrator, WorkflowOrchestrator>();
+
+                services.AddTransient<MainWindow>();
+            })
+            .Build();
+    }
+
+    private static string ResolveLogFolder(HeimdallConfig config)
+    {
+        var rootFolder = config.Logging.UseDocumentsFolder
+            ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            : Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+        return Path.Combine(rootFolder, config.Logging.LogFolderName);
+    }
+
+    private void ShowStartupFailure(Exception exception)
+    {
+        try
+        {
+            Log.Fatal(exception, "Heimdall failed during startup");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
+
+        _window = new Window
+        {
+            Title = "Heimdall startup error",
+            Content = new StackPanel
+            {
+                Spacing = 12,
+                Padding = new Thickness(24),
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text = "Heimdall could not start.",
+                        FontSize = 22,
+                        FontWeight = FontWeights.SemiBold
+                    },
+                    new TextBlock
+                    {
+                        Text = "The application configuration or startup services could not be loaded. Check Documents\\Heimdall\\Logs for technical details.",
+                        TextWrapping = TextWrapping.Wrap
+                    },
+                    new TextBlock
+                    {
+                        Text = exception.Message,
+                        TextWrapping = TextWrapping.Wrap
+                    }
+                }
+            }
+        };
+
         _window.Activate();
     }
 }

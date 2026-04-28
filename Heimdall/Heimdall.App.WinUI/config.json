@@ -1,0 +1,68 @@
+﻿{
+  "Heimdall": {
+    "CsvColumns": {
+      "TitleColumnName": "instances.title",
+      "AuthorColumnName": "instances.instance_primary_contributor",
+      "SummaryColumnName": "instances.notes",
+      "SubjectColumnName": "instances.subjects",
+      "RecordIdColumnName": "instances.id"
+    },
+    "SubjectLists": {
+      "AllowGenerateFreshLists": true,
+      "AllowExistingSubjectListFolder": true,
+      "RequiredCategoryFiles": [
+        "ArtSubjects.txt",
+        "BiologySubjects.txt",
+        "BusinessSubjects.txt",
+        "ChemistrySubjects.txt",
+        "ComputerSubjects.txt",
+        "EducationSubjects.txt",
+        "FictionSubjects.txt",
+        "ForensicsSubjects.txt",
+        "GeoscienceSubjects.txt",
+        "HistorySubjects.txt",
+        "HPERSubjects.txt",
+        "HumanitiesSubjects.txt",
+        "IDTSubjects.txt",
+        "InterDisSubjects.txt",
+        "MathSubjects.txt",
+        "MusicSubjects.txt",
+        "NursingSubjects.txt",
+        "PerformanceSubjects.txt",
+        "PhysicsSubjects.txt",
+        "PoliticsSubjects.txt",
+        "PsychSubjects.txt",
+        "SlimSubjects.txt"
+      ]
+    },
+    "Output": {
+      "DateFormat": "yyyy-MM-dd",
+      "CategoryFileNameTemplate": "{{Category}}NewBooks{{Date}}.html",
+      "CannotSortFileNameTemplate": "CannotSortBooks{{Date}}.html",
+      "RunSummaryFileNameTemplate": "RunSummary{{Date}}.txt",
+      "SaveDirectlyIntoSelectedFolder": true
+    },
+    "EmailTemplate": {
+      "PageTitleTemplate": "New {{Category}} Books",
+      "HeaderTemplate": "New {{Category}} Books",
+      "IncludeTitle": true,
+      "IncludeAuthor": true,
+      "IncludeSummary": true,
+      "UseFixedHeader": true
+    },
+    "Behavior": {
+      "AllowMultiCategoryMatch": true,
+      "GenerateCannotSortFile": true,
+      "HtmlEncodeOutput": true,
+      "TrimValues": true,
+      "NormalizeWhitespace": true,
+      "CaseInsensitiveSubjectMatching": true
+    },
+    "Logging": {
+      "UseDocumentsFolder": true,
+      "LogFolderName": "Heimdall\\Logs",
+      "LogFileNameTemplate": "Heimdall-.log",
+      "RetainedFileCountLimit": 30
+    }
+  }
+}
