@@ -1,3 +1,8 @@
+using Heimdall.Infrastructure.Bragi;
+using Heimdall.BragiCore.Extraction;
+using Heimdall.BragiCore.Export;
+using Heimdall.BragiCore.Configuration;
+using Heimdall.BragiCore.Categorization;
 using Heimdall.Infrastructure.Html;
 using Heimdall.Infrastructure.Csv;
 using System;
@@ -95,6 +100,12 @@ public partial class App : Microsoft.UI.Xaml.Application
                 services.AddSingleton<ICsvSchemaValidator, CsvSchemaValidator>();
                 services.AddSingleton<ICsvBookRecordReader, CsvBookRecordReader>();
 
+                services.AddSingleton(new BragiCoreOptions());
+                services.AddSingleton<SubjectExtractionService>();
+                services.AddSingleton<CategorizationService>();
+                services.AddSingleton<TextExportService>();
+                services.AddSingleton<IBragiSubjectListGenerator, BragiSubjectListGenerator>();
+
                 services.AddSingleton<WizardSessionStore>();
                 services.AddSingleton<IWorkflowOrchestrator, WorkflowOrchestrator>();
 
@@ -155,4 +166,5 @@ public partial class App : Microsoft.UI.Xaml.Application
         _window.Activate();
     }
 }
+
 
