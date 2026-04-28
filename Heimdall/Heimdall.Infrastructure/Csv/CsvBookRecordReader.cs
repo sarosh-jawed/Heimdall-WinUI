@@ -56,7 +56,8 @@ public sealed class CsvBookRecordReader : ICsvBookRecordReader
             HasHeaderRecord = true,
             BadDataFound = context =>
             {
-                warnings.Add($"Bad CSV data was found near row {context.Context.Parser.Row}.");
+                var rowNumber = context.Context?.Parser?.Row ?? 0;
+                warnings.Add($"Bad CSV data was found near row {rowNumber}.");
             },
             MissingFieldFound = null,
             HeaderValidated = null,
@@ -94,7 +95,8 @@ public sealed class CsvBookRecordReader : ICsvBookRecordReader
             }
             catch (Exception ex)
             {
-                warnings.Add($"Row {csvReader.Context.Parser.Row} was skipped: {ex.Message}");
+                var rowNumber = GetCurrentRowNumber(csvReader);
+                warnings.Add($"Row {rowNumber} was skipped: {ex.Message}");
             }
         }
 
@@ -156,5 +158,10 @@ public sealed class CsvBookRecordReader : ICsvBookRecordReader
         }
 
         return optionalFields;
+    }
+
+    private static int GetCurrentRowNumber(CsvReader csvReader)
+    {
+        return csvReader.Context?.Parser?.Row ?? 0;
     }
 }
