@@ -6,6 +6,13 @@ All notable changes to Heimdall WinUI will be documented in this file.
 
 ### Added
 
+- Added existing Bragi output folder mode.
+- Added category file detection for Bragi subject-list files.
+- Added subject-list folder reading with trimming and deduplication.
+- Added friendly validation errors for missing or empty Bragi output folders.
+- Added warnings when some expected Bragi subject-list files are missing.
+- Added tests for category detection and existing subject-list folder reading.
+
 - Added reusable BragiCore subject extraction, categorization, and text export services.
 - Added default Bragi category rules for Heimdall fresh subject-list generation.
 - Added `BragiSubjectListGenerator` implementation for `IBragiSubjectListGenerator`.
@@ -27,6 +34,7 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Documented confirmed MVP requirements.
 - Documented planned clean architecture.
 - Documented initial testing and release strategy.
+
 
 
 
