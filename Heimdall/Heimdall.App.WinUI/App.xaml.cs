@@ -1,3 +1,5 @@
+using Heimdall.Infrastructure.Html;
+using Heimdall.Infrastructure.Csv;
 using System;
 using System.IO;
 using Heimdall.Application.Configuration;
@@ -89,6 +91,10 @@ public partial class App : Microsoft.UI.Xaml.Application
                 services.AddSingleton<IHeimdallConfigLoader, HeimdallConfigLoader>();
                 services.AddSingleton<IHeimdallConfigValidator, HeimdallConfigValidator>();
 
+                services.AddSingleton<ISummaryExtractor, SummaryExtractor>();
+                services.AddSingleton<ICsvSchemaValidator, CsvSchemaValidator>();
+                services.AddSingleton<ICsvBookRecordReader, CsvBookRecordReader>();
+
                 services.AddSingleton<WizardSessionStore>();
                 services.AddSingleton<IWorkflowOrchestrator, WorkflowOrchestrator>();
 
@@ -149,3 +155,4 @@ public partial class App : Microsoft.UI.Xaml.Application
         _window.Activate();
     }
 }
+
