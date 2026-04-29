@@ -6,6 +6,13 @@ All notable changes to Heimdall WinUI will be documented in this file.
 
 ### Added
 
+- Added WinUI file and folder picker support.
+- Added CSV picker restricted to `.csv` files.
+- Added output folder picker.
+- Added existing Bragi subject-list folder picker.
+- Persisted selected paths in the wizard session store.
+- Added friendly picker cancellation and validation messages in the UI.
+
 - Added basic WinUI wizard shell and navigation.
 - Added step rail, progress indicator, Back and Next buttons, busy state, and friendly status area.
 - Added placeholder wizard pages for Start, Load Input, Subject Source, Category Selection, Preview Books, and Export Finish.
@@ -53,6 +60,7 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Documented confirmed MVP requirements.
 - Documented planned clean architecture.
 - Documented initial testing and release strategy.
+
 
 
 

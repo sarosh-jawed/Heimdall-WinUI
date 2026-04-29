@@ -12,7 +12,7 @@
                 FontWeight="SemiBold" />
 
             <TextBlock
-                Text="This page will collect the official FOLIO CSV file and the output folder. The visual layout is ready now; file picker integration comes in the next implementation phase."
+                Text="Select the official FOLIO CSV file and the output folder. Heimdall stores the selected paths for later workflow steps."
                 TextWrapping="Wrap" />
 
             <Grid ColumnSpacing="12" RowSpacing="12">
@@ -27,6 +27,7 @@
                 </Grid.RowDefinitions>
 
                 <TextBox
+                    x:Name="CsvPathTextBox"
                     Grid.Row="0"
                     Grid.Column="0"
                     Header="Official FOLIO CSV file"
@@ -34,13 +35,15 @@
                     IsReadOnly="True" />
 
                 <Button
+                    x:Name="SelectCsvButton"
                     Grid.Row="0"
                     Grid.Column="1"
                     VerticalAlignment="Bottom"
                     Content="Select CSV"
-                    IsEnabled="False" />
+                    Click="SelectCsvButton_Click" />
 
                 <TextBox
+                    x:Name="OutputFolderTextBox"
                     Grid.Row="1"
                     Grid.Column="0"
                     Header="Output folder"
@@ -48,11 +51,12 @@
                     IsReadOnly="True" />
 
                 <Button
+                    x:Name="SelectOutputFolderButton"
                     Grid.Row="1"
                     Grid.Column="1"
                     VerticalAlignment="Bottom"
                     Content="Select Folder"
-                    IsEnabled="False" />
+                    Click="SelectOutputFolderButton_Click" />
             </Grid>
 
             <InfoBar
@@ -61,6 +65,14 @@
                 Severity="Informational"
                 Title="Expected CSV schema"
                 Message="Required columns: instances.title, instances.instance_primary_contributor, instances.notes, instances.subjects, and instances.id." />
+
+            <InfoBar
+                x:Name="PathStatusInfoBar"
+                IsOpen="False"
+                IsClosable="True"
+                Severity="Informational"
+                Title="Status"
+                Message="" />
         </StackPanel>
     </ScrollViewer>
 </Page>
