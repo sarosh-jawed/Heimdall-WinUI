@@ -6,6 +6,13 @@ All notable changes to Heimdall WinUI will be documented in this file.
 
 ### Added
 
+- Added functional preview and remove-record behavior.
+- Displayed matched books grouped by selected category.
+- Added book cards with title, author, summary preview, and category-specific remove action.
+- Added CannotSort preview summary.
+- Preserved multi-category matching behavior when removing a book from one category.
+- Added tests confirming removed books do not appear in that category export while remaining in other matched categories.
+
 - Added functional category selection page.
 - Loaded broad categories from generated or existing Bragi subject lists.
 - Added subject counts per category.
@@ -68,6 +75,7 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Documented confirmed MVP requirements.
 - Documented planned clean architecture.
 - Documented initial testing and release strategy.
+
 
 
 
