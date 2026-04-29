@@ -11,8 +11,13 @@ public sealed class RunSummary
     public string? SubjectListFolderPath { get; init; }
     public IReadOnlyList<CategoryKey> SelectedCategories { get; init; } = Array.Empty<CategoryKey>();
     public int TotalRecordsRead { get; init; }
+
     public IReadOnlyDictionary<CategoryKey, int> MatchedRecordCounts { get; init; } =
         new Dictionary<CategoryKey, int>();
+
+    public IReadOnlyDictionary<CategoryKey, int> RemovedRecordCounts { get; init; } =
+        new Dictionary<CategoryKey, int>();
+
     public int CannotSortCount { get; init; }
     public IReadOnlyList<OutputFileName> GeneratedFiles { get; init; } = Array.Empty<OutputFileName>();
     public IReadOnlyList<string> Warnings { get; init; } = Array.Empty<string>();

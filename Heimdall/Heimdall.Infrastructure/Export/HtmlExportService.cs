@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Heimdall.Application.Configuration;
 using Heimdall.Application.Contracts;
 using Heimdall.Domain.Results;
@@ -25,6 +25,7 @@ public sealed class HtmlExportService : IHtmlExportService
     public async Task<HtmlExportResult> ExportAsync(
         EmailPreviewResult previewResult,
         string outputFolder,
+        ExportRunContext? runContext = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(previewResult);
@@ -68,52 +69,47 @@ public sealed class HtmlExportService : IHtmlExportService
             generatedFiles.Add(cannotSortFileName);
         }
 
+        var runSummaryFileName = BuildFileName(
+            _config.Output.RunSummaryFileNameTemplate,
+            category: null,
+            dateToken);
+
+        // Add RunSummary before rendering it so the summary file lists itself too.
+        generatedFiles.Add(runSummaryFileName);
+
         var runEndedAt = DateTimeOffset.Now;
 
         var runSummary = new RunSummary
         {
             RunStartedAt = runStartedAt,
             RunEndedAt = runEndedAt,
-            SubjectListMode = "WorkflowExport",
-            TotalRecordsRead = previewResult.Categories.Sum(category => category.Books.Count) + previewResult.CannotSortBooks.Count,
-            SelectedCategories = previewResult.Categories.Select(category => category.Category.Key).ToArray(),
+            SourceCsvPath = runContext?.SourceCsvPath ?? string.Empty,
+            SubjectListMode = runContext?.SubjectListMode ?? "WorkflowExport",
+            SubjectListFolderPath = runContext?.SubjectListFolderPath,
+            TotalRecordsRead = runContext?.TotalRecordsRead ?? CountUniqueRecords(previewResult),
+            SelectedCategories = runContext?.SelectedCategories.Count > 0
+                ? runContext.SelectedCategories
+                : previewResult.Categories.Select(category => category.Category.Key).ToArray(),
             MatchedRecordCounts = previewResult.Categories.ToDictionary(
                 category => category.Category.Key,
                 category => category.ActiveBookCount),
+            RemovedRecordCounts = runContext?.RemovedRecordCounts.Count > 0
+                ? runContext.RemovedRecordCounts
+                : previewResult.Categories.ToDictionary(
+                    category => category.Category.Key,
+                    category => category.Books.Count - category.ActiveBookCount),
             CannotSortCount = previewResult.CannotSortBooks.Count,
             GeneratedFiles = generatedFiles.ToArray(),
             Warnings = previewResult.Warnings
         };
 
-        var runSummaryFileName = BuildFileName(
-            _config.Output.RunSummaryFileNameTemplate,
-            category: null,
-            dateToken);
-
         var runSummaryPath = Path.Combine(outputFolder, runSummaryFileName.Value);
         await File.WriteAllTextAsync(runSummaryPath, _runSummaryService.RenderText(runSummary), cancellationToken);
-
-        generatedFiles.Add(runSummaryFileName);
-
-        var finalRunSummary = new RunSummary
-        {
-            RunStartedAt = runSummary.RunStartedAt,
-            RunEndedAt = runSummary.RunEndedAt,
-            SourceCsvPath = runSummary.SourceCsvPath,
-            SubjectListMode = runSummary.SubjectListMode,
-            SubjectListFolderPath = runSummary.SubjectListFolderPath,
-            SelectedCategories = runSummary.SelectedCategories,
-            TotalRecordsRead = runSummary.TotalRecordsRead,
-            MatchedRecordCounts = runSummary.MatchedRecordCounts,
-            CannotSortCount = runSummary.CannotSortCount,
-            GeneratedFiles = generatedFiles.ToArray(),
-            Warnings = runSummary.Warnings
-        };
 
         return new HtmlExportResult(
             outputFolder,
             generatedFiles,
-            finalRunSummary,
+            runSummary,
             previewResult.Warnings);
     }
 
@@ -153,7 +149,15 @@ public sealed class HtmlExportService : IHtmlExportService
             ? "Category"
             : cleaned;
     }
+
+    private static int CountUniqueRecords(EmailPreviewResult previewResult)
+    {
+        var bookIds = previewResult.Categories
+            .SelectMany(category => category.Books.Select(book => book.BookId))
+            .Concat(previewResult.CannotSortBooks.Select(book => book.BookId))
+            .Where(bookId => !string.IsNullOrWhiteSpace(bookId))
+            .Distinct(StringComparer.OrdinalIgnoreCase);
+
+        return bookIds.Count();
+    }
 }
-
-
-

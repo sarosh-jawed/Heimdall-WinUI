@@ -1,4 +1,4 @@
-﻿using Heimdall.Application.Contracts;
+using Heimdall.Application.Contracts;
 using Heimdall.Domain.Models;
 using Heimdall.Domain.Results;
 using Heimdall.Domain.ValueObjects;
@@ -229,9 +229,12 @@ public sealed class WorkflowOrchestrator : IWorkflowOrchestrator
                     throw new InvalidOperationException("A preview must be built before export.");
                 }
 
+                var runContext = BuildExportRunContext();
+
                 var result = await _htmlExportService.ExportAsync(
                     _sessionStore.PreviewResult,
                     outputFolder,
+                    runContext,
                     cancellationToken);
 
                 _sessionStore.OutputFolderPath = outputFolder;
@@ -243,6 +246,36 @@ public sealed class WorkflowOrchestrator : IWorkflowOrchestrator
 
                 return result;
             });
+    }
+
+    private ExportRunContext BuildExportRunContext()
+    {
+        if (_sessionStore.PreviewResult is null)
+        {
+            throw new InvalidOperationException("A preview must be built before export run context can be created.");
+        }
+
+        var selectedCategories = _sessionStore.SelectedCategoryKeys.Count > 0
+            ? _sessionStore.SelectedCategoryKeys
+            : _sessionStore.PreviewResult.Categories
+                .Select(category => category.Category.Key)
+                .ToArray();
+
+        var removedRecordCounts = _sessionStore.PreviewResult.Categories.ToDictionary(
+            category => category.Category.Key,
+            category => category.Books.Count - category.ActiveBookCount);
+
+        return new ExportRunContext
+        {
+            SourceCsvPath = _sessionStore.SourceCsvPath ?? string.Empty,
+            SubjectListMode = string.IsNullOrWhiteSpace(_sessionStore.SubjectListMode)
+                ? "Unknown"
+                : _sessionStore.SubjectListMode,
+            SubjectListFolderPath = _sessionStore.SubjectListFolderPath,
+            SelectedCategories = selectedCategories,
+            TotalRecordsRead = _sessionStore.CsvLoadResult?.Books.Count ?? 0,
+            RemovedRecordCounts = removedRecordCounts
+        };
     }
 
     private EmailPreviewResult ApplyRemovedBookSelections(EmailPreviewResult previewResult)
