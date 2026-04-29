@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Versioning;
+using System.Threading;
 using System.Threading.Tasks;
+using Heimdall.App.WinUI.Navigation;
 using Heimdall.App.WinUI.Pages;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -11,7 +12,7 @@ namespace Heimdall.App.WinUI;
 
 /// <summary>
 /// Main desktop shell for Heimdall's step-by-step wizard.
-/// Business workflow logic stays outside this class; this class only owns navigation and shell state.
+/// Business workflow logic stays in page/view workflow services; this class owns navigation and shell state.
 /// </summary>
 [SupportedOSPlatform("windows10.0.17763.0")]
 public sealed partial class MainWindow : Window
@@ -60,11 +61,12 @@ public sealed partial class MainWindow : Window
 
         WindowHandle = WinRT.Interop.WindowNative.GetWindowHandle(this);
 
-        List<string> stepLabels = _steps
-            .Select((step, index) => $"{index + 1}. {step.Title}")
-            .ToList();
+        StepsListView.Items.Clear();
 
-        StepsListView.ItemsSource = stepLabels;
+        for (int index = 0; index < _steps.Count; index++)
+        {
+            StepsListView.Items.Add($"{index + 1}. {_steps[index].Title}");
+        }
 
         NavigateToStep(0);
     }
@@ -76,7 +78,7 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        await NavigateToStepAsync(_currentStepIndex - 1);
+        await NavigateToStepAsync(_currentStepIndex - 1, validateCurrentStep: false);
     }
 
     private async void NextButton_Click(object _, RoutedEventArgs _1)
@@ -86,18 +88,28 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        await NavigateToStepAsync(_currentStepIndex + 1);
+        await NavigateToStepAsync(_currentStepIndex + 1, validateCurrentStep: true);
     }
 
-    private async Task NavigateToStepAsync(int targetStepIndex)
+    private async Task NavigateToStepAsync(int targetStepIndex, bool validateCurrentStep)
     {
         try
         {
-            SetBusy(true, "Loading step...");
+            SetBusy(true, "Working...");
 
-            // A short delay makes the busy-state behavior visible during manual testing.
-            // Later phases will replace this with real async workflow operations.
-            await Task.Delay(150);
+            if (validateCurrentStep && ContentFrame.Content is IWizardStepPage wizardStepPage)
+            {
+                WizardStepResult result = await wizardStepPage.OnNextAsync(CancellationToken.None);
+
+                if (!result.CanContinue)
+                {
+                    ShowError(
+                        result.ErrorTitle ?? "Cannot continue",
+                        result.ErrorMessage ?? "Please resolve the current step before continuing.");
+
+                    return;
+                }
+            }
 
             NavigateToStep(targetStepIndex);
             HideStatusMessage();
@@ -123,7 +135,7 @@ public sealed partial class MainWindow : Window
 
         _currentStepIndex = targetStepIndex;
 
-        var step = _steps[_currentStepIndex];
+        WizardStepDefinition step = _steps[_currentStepIndex];
 
         ContentFrame.Navigate(step.PageType);
 
@@ -173,8 +185,5 @@ public sealed partial class MainWindow : Window
     private sealed record WizardStepDefinition(
         string Title,
         string Description,
-        System.Type PageType);
+        Type PageType);
 }
-
-
-

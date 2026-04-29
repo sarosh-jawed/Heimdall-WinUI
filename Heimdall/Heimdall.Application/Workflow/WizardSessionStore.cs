@@ -1,5 +1,6 @@
 ﻿using Heimdall.Domain.Models;
 using Heimdall.Domain.Results;
+using Heimdall.Domain.ValueObjects;
 
 namespace Heimdall.Application.Workflow;
 
@@ -15,6 +16,8 @@ public sealed class WizardSessionStore
     public CategoryMatchResult? CategoryMatchResult { get; set; }
     public EmailPreviewResult? PreviewResult { get; set; }
 
+    public IReadOnlyList<CategoryKey> SelectedCategoryKeys { get; set; } = Array.Empty<CategoryKey>();
+
     public List<RemovedBookSelection> RemovedBookSelections { get; } = new();
 
     public void Reset()
@@ -27,6 +30,7 @@ public sealed class WizardSessionStore
         SubjectListLoadResult = null;
         CategoryMatchResult = null;
         PreviewResult = null;
+        SelectedCategoryKeys = Array.Empty<CategoryKey>();
         RemovedBookSelections.Clear();
     }
 
@@ -34,6 +38,7 @@ public sealed class WizardSessionStore
     {
         CategoryMatchResult = null;
         PreviewResult = null;
+        SelectedCategoryKeys = Array.Empty<CategoryKey>();
         RemovedBookSelections.Clear();
     }
 }
