@@ -1,18 +1,19 @@
-﻿using Heimdall.Infrastructure.Export;
-using Heimdall.Infrastructure.Matching;
-using Heimdall.Infrastructure.Bragi;
-using Heimdall.BragiCore.Extraction;
-using Heimdall.BragiCore.Export;
-using Heimdall.BragiCore.Configuration;
-using Heimdall.BragiCore.Categorization;
-using Heimdall.Infrastructure.Html;
-using Heimdall.Infrastructure.Csv;
-using System;
+﻿using System;
 using System.IO;
+using Heimdall.App.WinUI.Services;
 using Heimdall.Application.Configuration;
 using Heimdall.Application.Contracts;
 using Heimdall.Application.Workflow;
+using Heimdall.BragiCore.Categorization;
+using Heimdall.BragiCore.Configuration;
+using Heimdall.BragiCore.Export;
+using Heimdall.BragiCore.Extraction;
+using Heimdall.Infrastructure.Bragi;
 using Heimdall.Infrastructure.Configuration;
+using Heimdall.Infrastructure.Csv;
+using Heimdall.Infrastructure.Export;
+using Heimdall.Infrastructure.Html;
+using Heimdall.Infrastructure.Matching;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -32,6 +33,8 @@ public partial class App : Microsoft.UI.Xaml.Application
     private IHost? _host;
     private Window? _window;
 
+    public static IServiceProvider Services { get; private set; } = null!;
+
     public App()
     {
         InitializeComponent();
@@ -48,6 +51,8 @@ public partial class App : Microsoft.UI.Xaml.Application
         try
         {
             _host = CreateHost();
+            Services = _host.Services;
+
             _host.Start();
 
             ILogger<App> logger = _host.Services.GetRequiredService<ILogger<App>>();
@@ -118,6 +123,8 @@ public partial class App : Microsoft.UI.Xaml.Application
                 services.AddSingleton<WizardSessionStore>();
                 services.AddSingleton<IWorkflowOrchestrator, WorkflowOrchestrator>();
 
+                services.AddSingleton<IFilePickerService, WinUiFilePickerService>();
+
                 services.AddTransient<MainWindow>();
             })
             .Build();
@@ -175,8 +182,3 @@ public partial class App : Microsoft.UI.Xaml.Application
         _window.Activate();
     }
 }
-
-
-
-
-

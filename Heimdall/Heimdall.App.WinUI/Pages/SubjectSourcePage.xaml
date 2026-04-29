@@ -15,14 +15,47 @@
                 Text="Heimdall supports two subject-list modes: generating fresh lists using Bragi core logic, or reading an existing Bragi output folder."
                 TextWrapping="Wrap" />
 
-            <RadioButtons Header="Subject-list source">
-                <RadioButton
-                    Content="Generate fresh Bragi subject lists from the selected FOLIO CSV"
-                    IsChecked="True" />
+            <StackPanel Spacing="10">
+                <TextBlock
+                    Text="Subject-list source"
+                    FontWeight="SemiBold" />
 
                 <RadioButton
-                    Content="Use an existing Bragi output folder" />
-            </RadioButtons>
+                    x:Name="GenerateFreshRadioButton"
+                    Content="Generate fresh Bragi subject lists from the selected FOLIO CSV"
+                    GroupName="SubjectSource"
+                    IsChecked="True"
+                    Checked="SubjectSourceRadioButton_Checked" />
+
+                <RadioButton
+                    x:Name="ExistingFolderRadioButton"
+                    Content="Use an existing Bragi output folder"
+                    GroupName="SubjectSource"
+                    Checked="SubjectSourceRadioButton_Checked" />
+            </StackPanel>
+
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox
+                    x:Name="ExistingBragiFolderTextBox"
+                    Grid.Column="0"
+                    Header="Existing Bragi subject-list folder"
+                    PlaceholderText="No existing Bragi folder selected yet"
+                    IsReadOnly="True"
+                    IsEnabled="False" />
+
+                <Button
+                    x:Name="SelectExistingBragiFolderButton"
+                    Grid.Column="1"
+                    VerticalAlignment="Bottom"
+                    Content="Select Folder"
+                    IsEnabled="False"
+                    Click="SelectExistingBragiFolderButton_Click" />
+            </Grid>
 
             <Border
                 Padding="18"
@@ -41,6 +74,14 @@
                     <TextBlock Text="NotCategorizedSubjects.txt and RunSummary.txt are Bragi outputs, but CannotSortBooks.html is generated later by Heimdall at the book-record level." TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
+
+            <InfoBar
+                x:Name="SubjectSourceStatusInfoBar"
+                IsOpen="False"
+                IsClosable="True"
+                Severity="Informational"
+                Title="Status"
+                Message="" />
         </StackPanel>
     </ScrollViewer>
 </Page>

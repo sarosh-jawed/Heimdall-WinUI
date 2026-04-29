@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Versioning;
@@ -52,13 +52,19 @@ public sealed partial class MainWindow : Window
 
     private int _currentStepIndex;
 
+    public static IntPtr WindowHandle { get; private set; }
+
     public MainWindow()
     {
         InitializeComponent();
 
-        StepsListView.ItemsSource = _steps
+        WindowHandle = WinRT.Interop.WindowNative.GetWindowHandle(this);
+
+        List<string> stepLabels = _steps
             .Select((step, index) => $"{index + 1}. {step.Title}")
-            .ToArray();
+            .ToList();
+
+        StepsListView.ItemsSource = stepLabels;
 
         NavigateToStep(0);
     }
@@ -169,3 +175,6 @@ public sealed partial class MainWindow : Window
         string Description,
         System.Type PageType);
 }
+
+
+
