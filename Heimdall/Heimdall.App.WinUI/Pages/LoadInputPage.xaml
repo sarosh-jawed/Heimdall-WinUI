@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Heimdall.App.WinUI.Pages.LoadInputPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer>
+        <StackPanel Spacing="20" MaxWidth="860">
+            <TextBlock
+                Text="Load official FOLIO input"
+                FontSize="24"
+                FontWeight="SemiBold" />
+
+            <TextBlock
+                Text="This page will collect the official FOLIO CSV file and the output folder. The visual layout is ready now; file picker integration comes in the next implementation phase."
+                TextWrapping="Wrap" />
+
+            <Grid ColumnSpacing="12" RowSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBox
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Header="Official FOLIO CSV file"
+                    PlaceholderText="No CSV file selected yet"
+                    IsReadOnly="True" />
+
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    VerticalAlignment="Bottom"
+                    Content="Select CSV"
+                    IsEnabled="False" />
+
+                <TextBox
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Header="Output folder"
+                    PlaceholderText="No output folder selected yet"
+                    IsReadOnly="True" />
+
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    VerticalAlignment="Bottom"
+                    Content="Select Folder"
+                    IsEnabled="False" />
+            </Grid>
+
+            <InfoBar
+                IsOpen="True"
+                IsClosable="False"
+                Severity="Informational"
+                Title="Expected CSV schema"
+                Message="Required columns: instances.title, instances.instance_primary_contributor, instances.notes, instances.subjects, and instances.id." />
+        </StackPanel>
+    </ScrollViewer>
+</Page>

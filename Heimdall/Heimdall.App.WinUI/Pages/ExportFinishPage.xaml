@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Heimdall.App.WinUI.Pages.ExportFinishPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer>
+        <StackPanel Spacing="20" MaxWidth="860">
+            <TextBlock
+                Text="Export and finish"
+                FontSize="24"
+                FontWeight="SemiBold" />
+
+            <TextBlock
+                Text="This page will generate the final category HTML files, CannotSortBooks.html when needed, RunSummary.txt, and logs."
+                TextWrapping="Wrap" />
+
+            <Border
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1">
+
+                <StackPanel Spacing="8">
+                    <TextBlock
+                        Text="Expected output"
+                        FontSize="18"
+                        FontWeight="SemiBold" />
+
+                    <TextBlock Text="One HTML file per selected category." TextWrapping="Wrap" />
+                    <TextBlock Text="CannotSortBooks.html when unmatched records exist." TextWrapping="Wrap" />
+                    <TextBlock Text="RunSummary.txt for audit and troubleshooting." TextWrapping="Wrap" />
+                    <TextBlock Text="Logs under Documents\Heimdall\Logs." TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Button
+                Content="Open Output Folder"
+                IsEnabled="False" />
+        </StackPanel>
+    </ScrollViewer>
+</Page>

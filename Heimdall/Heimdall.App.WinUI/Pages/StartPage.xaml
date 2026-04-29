@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Heimdall.App.WinUI.Pages.StartPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer>
+        <StackPanel Spacing="20" MaxWidth="860">
+            <TextBlock
+                Text="Welcome to Heimdall"
+                FontSize="24"
+                FontWeight="SemiBold" />
+
+            <TextBlock
+                Text="Heimdall creates manual HTML email files from official FOLIO CSV book records and Bragi subject lists. The app is designed as a guided workflow so staff can move through the process one step at a time."
+                TextWrapping="Wrap" />
+
+            <Border
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1">
+
+                <StackPanel Spacing="10">
+                    <TextBlock
+                        Text="Workflow overview"
+                        FontSize="18"
+                        FontWeight="SemiBold" />
+
+                    <TextBlock Text="1. Load the official FOLIO CSV file." TextWrapping="Wrap" />
+                    <TextBlock Text="2. Choose the output folder." TextWrapping="Wrap" />
+                    <TextBlock Text="3. Generate fresh Bragi subject lists or use an existing Bragi output folder." TextWrapping="Wrap" />
+                    <TextBlock Text="4. Select broad subject categories." TextWrapping="Wrap" />
+                    <TextBlock Text="5. Preview books by category and remove books where needed." TextWrapping="Wrap" />
+                    <TextBlock Text="6. Export HTML files, CannotSort output, run summary, and logs." TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <InfoBar
+                IsOpen="True"
+                IsClosable="False"
+                Severity="Informational"
+                Title="Phase 10 status"
+                Message="This phase adds the wizard shell and navigation. File pickers and real workflow actions will be connected in the next UI phases." />
+        </StackPanel>
+    </ScrollViewer>
+</Page>

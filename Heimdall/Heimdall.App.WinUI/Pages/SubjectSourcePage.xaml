@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Heimdall.App.WinUI.Pages.SubjectSourcePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer>
+        <StackPanel Spacing="20" MaxWidth="860">
+            <TextBlock
+                Text="Choose subject-list source"
+                FontSize="24"
+                FontWeight="SemiBold" />
+
+            <TextBlock
+                Text="Heimdall supports two subject-list modes: generating fresh lists using Bragi core logic, or reading an existing Bragi output folder."
+                TextWrapping="Wrap" />
+
+            <RadioButtons Header="Subject-list source">
+                <RadioButton
+                    Content="Generate fresh Bragi subject lists from the selected FOLIO CSV"
+                    IsChecked="True" />
+
+                <RadioButton
+                    Content="Use an existing Bragi output folder" />
+            </RadioButtons>
+
+            <Border
+                Padding="18"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1">
+
+                <StackPanel Spacing="8">
+                    <TextBlock
+                        Text="Generated/read files"
+                        FontSize="18"
+                        FontWeight="SemiBold" />
+
+                    <TextBlock Text="ArtSubjects.txt, BusinessSubjects.txt, ComputerSubjects.txt, HistorySubjects.txt, EducationSubjects.txt, SlimSubjects.txt, and other configured category files." TextWrapping="Wrap" />
+                    <TextBlock Text="NotCategorizedSubjects.txt and RunSummary.txt are Bragi outputs, but CannotSortBooks.html is generated later by Heimdall at the book-record level." TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
