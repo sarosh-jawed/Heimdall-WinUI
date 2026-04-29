@@ -7,6 +7,7 @@
     <Grid RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -17,13 +18,22 @@
                 FontWeight="SemiBold" />
 
             <TextBlock
-                Text="This page will show books grouped by selected category. Removing a book from one category will not remove it from other matched categories."
+                Text="Review books grouped by category. Removing a book from one category does not remove it from other matched categories."
                 TextWrapping="Wrap" />
         </StackPanel>
 
-        <Grid Grid.Row="1" ColumnSpacing="16">
+        <InfoBar
+            x:Name="PreviewStatusInfoBar"
+            Grid.Row="1"
+            IsOpen="False"
+            IsClosable="True"
+            Severity="Informational"
+            Title="Status"
+            Message="" />
+
+        <Grid Grid.Row="2" ColumnSpacing="16">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="240" />
+                <ColumnDefinition Width="280" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
@@ -35,19 +45,31 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1">
 
-                <StackPanel Spacing="8">
+                <Grid RowSpacing="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
                     <TextBlock
+                        Grid.Row="0"
                         Text="Categories"
                         FontSize="18"
                         FontWeight="SemiBold" />
 
-                    <ListView>
-                        <ListViewItem Content="Art" />
-                        <ListViewItem Content="History" />
-                        <ListViewItem Content="Education" />
-                        <ListViewItem Content="CannotSort" />
-                    </ListView>
-                </StackPanel>
+                    <TextBlock
+                        x:Name="PreviewSummaryTextBlock"
+                        Grid.Row="1"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        TextWrapping="Wrap" />
+
+                    <ListView
+                        x:Name="CategoryListView"
+                        Grid.Row="2"
+                        SelectionMode="Single"
+                        SelectionChanged="CategoryListView_SelectionChanged" />
+                </Grid>
             </Border>
 
             <Border
@@ -58,22 +80,41 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1">
 
-                <StackPanel Spacing="12">
-                    <TextBlock
-                        Text="Book preview"
-                        FontSize="18"
-                        FontWeight="SemiBold" />
+                <Grid RowSpacing="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                    <TextBlock
-                        Text="Matched book cards will appear here after the workflow is connected to the UI."
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        TextWrapping="Wrap" />
+                    <StackPanel Grid.Row="0" Spacing="4">
+                        <TextBlock
+                            x:Name="BookPreviewHeaderTextBlock"
+                            Text="Book preview"
+                            FontSize="18"
+                            FontWeight="SemiBold" />
 
-                    <ListView>
-                        <ListViewItem Content="Example: Book title, author, and summary preview" />
-                        <ListViewItem Content="Example: Remove button will be added during preview integration" />
-                    </ListView>
-                </StackPanel>
+                        <TextBlock
+                            x:Name="BookPreviewCountTextBlock"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <InfoBar
+                        x:Name="BookPreviewInfoBar"
+                        Grid.Row="1"
+                        IsOpen="False"
+                        IsClosable="False"
+                        Severity="Informational"
+                        Title="Preview note"
+                        Message="" />
+
+                    <ScrollViewer Grid.Row="2">
+                        <StackPanel
+                            x:Name="BookCardsPanel"
+                            Spacing="12" />
+                    </ScrollViewer>
+                </Grid>
             </Border>
         </Grid>
     </Grid>
