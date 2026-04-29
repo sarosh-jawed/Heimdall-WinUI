@@ -6,6 +6,14 @@ All notable changes to Heimdall WinUI will be documented in this file.
 
 ### Added
 
+- Added functional category selection page.
+- Loaded broad categories from generated or existing Bragi subject lists.
+- Added subject counts per category.
+- Added Select all and Clear all controls.
+- Added category selection validation before preview.
+- Connected selected categories to workflow preview generation.
+- Added wizard step validation so users cannot continue before required workflow state is ready.
+
 - Added WinUI file and folder picker support.
 - Added CSV picker restricted to `.csv` files.
 - Added output folder picker.
@@ -60,6 +68,7 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Documented confirmed MVP requirements.
 - Documented planned clean architecture.
 - Documented initial testing and release strategy.
+
 
 
 
