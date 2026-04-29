@@ -6,6 +6,12 @@ All notable changes to Heimdall WinUI will be documented in this file.
 
 ### Added
 
+- Expanded the Export & Finish page into a completion summary.
+- Added output folder, generated files, category counts, CannotSort count, and run timing display after export.
+- Added Open Logs button.
+- Added full RunSummary context including source CSV path, subject-list mode, subject-list folder path, selected categories, total records read, matched counts, removed counts, CannotSort count, generated files, run start/end timestamp, and warnings.
+- Added RunSummary service tests and context-based export summary coverage.
+
 - Connected the Export & Finish page to the real export workflow.
 - Added final export action from the WinUI wizard.
 - Added generated file list display after export.
@@ -87,6 +93,7 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Documented confirmed MVP requirements.
 - Documented planned clean architecture.
 - Documented initial testing and release strategy.
+
 
 
 

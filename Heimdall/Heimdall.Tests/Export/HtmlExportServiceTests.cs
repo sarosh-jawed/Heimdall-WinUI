@@ -1,8 +1,9 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Heimdall.Application.Configuration;
 using Heimdall.Domain.Models;
 using Heimdall.Domain.Results;
+using Heimdall.Domain.ValueObjects;
 using Heimdall.Infrastructure.Export;
 using Heimdall.Infrastructure.Html;
 
@@ -139,6 +140,56 @@ public sealed class HtmlExportServiceTests
             Assert.Contains("Heimdall Run Summary", text);
             Assert.Contains("Generated Files:", text);
             Assert.Contains("Cannot Sort Count: 1", text);
+        }
+        finally
+        {
+            Directory.Delete(outputFolder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task ExportAsync_RunSummaryUsesWorkflowContext()
+    {
+        string outputFolder = CreateTempFolder();
+
+        try
+        {
+            HtmlExportService service = CreateService();
+
+            var artKey = new CategoryKey("Art");
+            var businessKey = new CategoryKey("Business");
+
+            var context = new ExportRunContext
+            {
+                SourceCsvPath = @"C:\Input\2nd Floor Display Books.csv",
+                SubjectListMode = "GenerateFresh",
+                SubjectListFolderPath = @"C:\Output\BragiSubjectLists",
+                SelectedCategories = new[] { artKey, businessKey },
+                TotalRecordsRead = 34,
+                RemovedRecordCounts = new Dictionary<CategoryKey, int>
+                {
+                    [artKey] = 0,
+                    [businessKey] = 1
+                }
+            };
+
+            HtmlExportResult result = await service.ExportAsync(
+                CreatePreviewResult(),
+                outputFolder,
+                context);
+
+            string runSummaryFile = Directory.GetFiles(outputFolder)
+                .Single(file => Regex.IsMatch(Path.GetFileName(file), @"^RunSummary\d{4}-\d{2}-\d{2}\.txt$"));
+
+            string text = await File.ReadAllTextAsync(runSummaryFile);
+
+            Assert.Contains(@"C:\Input\2nd Floor Display Books.csv", text);
+            Assert.Contains("GenerateFresh", text);
+            Assert.Contains(@"C:\Output\BragiSubjectLists", text);
+            Assert.Contains("Total Records Read: 34", text);
+            Assert.Contains("Removed Records by Category:", text);
+            Assert.Contains("business: 1", text);
+            Assert.Contains(result.GeneratedFiles.Single(file => file.Value.StartsWith("RunSummary", StringComparison.OrdinalIgnoreCase)).Value, text);
         }
         finally
         {

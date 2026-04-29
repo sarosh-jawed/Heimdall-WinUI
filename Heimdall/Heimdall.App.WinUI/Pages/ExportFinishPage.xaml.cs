@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Heimdall.Application.Configuration;
 using Heimdall.Application.Contracts;
 using Heimdall.Application.Workflow;
 using Heimdall.Domain.Results;
@@ -16,6 +18,7 @@ public sealed partial class ExportFinishPage : Page
 {
     private readonly IWorkflowOrchestrator _workflowOrchestrator;
     private readonly WizardSessionStore _sessionStore;
+    private readonly HeimdallConfig _config;
 
     private HtmlExportResult? _lastExportResult;
 
@@ -25,6 +28,7 @@ public sealed partial class ExportFinishPage : Page
 
         _workflowOrchestrator = App.Services.GetRequiredService<IWorkflowOrchestrator>();
         _sessionStore = App.Services.GetRequiredService<WizardSessionStore>();
+        _config = App.Services.GetRequiredService<HeimdallConfig>();
 
         Loaded += ExportFinishPage_Loaded;
     }
@@ -64,10 +68,10 @@ public sealed partial class ExportFinishPage : Page
 
             _lastExportResult = result;
 
-            RenderGeneratedFiles(result);
+            RenderFinishState(result);
 
             ShowSuccess(
-                "Export complete",
+                "Export completed successfully",
                 $"{result.GeneratedFiles.Count} file(s) were written directly into the selected output folder.");
         }
         catch (Exception ex)
@@ -77,60 +81,83 @@ public sealed partial class ExportFinishPage : Page
         finally
         {
             SetBusy(false);
-            RefreshOpenOutputFolderButton();
+            RefreshOpenButtons();
         }
     }
 
     private void OpenOutputFolderButton_Click(object sender, RoutedEventArgs e)
     {
         string? outputFolder = _lastExportResult?.OutputFolder ?? _sessionStore.OutputFolderPath;
+        OpenFolder(outputFolder, "Output folder unavailable", "The output folder could not be opened because it does not exist.");
+    }
 
-        if (string.IsNullOrWhiteSpace(outputFolder) || !Directory.Exists(outputFolder))
-        {
-            ShowError("Output folder unavailable", "The output folder could not be opened because it does not exist.");
-            return;
-        }
+    private void OpenLogsButton_Click(object sender, RoutedEventArgs e)
+    {
+        string logFolder = ResolveLogFolder();
+        Directory.CreateDirectory(logFolder);
 
-        try
-        {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = outputFolder,
-                UseShellExecute = true
-            });
-        }
-        catch (Exception ex)
-        {
-            ShowError("Could not open folder", ex.Message);
-        }
+        OpenFolder(logFolder, "Logs unavailable", "The log folder could not be opened.");
     }
 
     private void RefreshPageState()
     {
         OutputFolderTextBlock.Text = string.IsNullOrWhiteSpace(_sessionStore.OutputFolderPath)
             ? "No output folder selected yet."
-            : _sessionStore.OutputFolderPath;
+            : $"Output folder: {_sessionStore.OutputFolderPath}";
 
         ExportFilesButton.IsEnabled =
             _sessionStore.PreviewResult is not null &&
             !string.IsNullOrWhiteSpace(_sessionStore.OutputFolderPath) &&
             Directory.Exists(_sessionStore.OutputFolderPath);
 
-        RefreshOpenOutputFolderButton();
-
         if (_sessionStore.PreviewResult is null)
         {
+            CompletionStatusTextBlock.Text = "Export has not been run yet. Build a preview first, then return here to export.";
             GeneratedFilesSummaryTextBlock.Text = "No preview is available yet. Go back to Select Categories and build the preview before exporting.";
         }
+        else
+        {
+            CompletionStatusTextBlock.Text = "Ready to export. Click Export Files to generate the final HTML files and RunSummary.";
+        }
+
+        RefreshOpenButtons();
     }
 
-    private void RefreshOpenOutputFolderButton()
+    private void RenderFinishState(HtmlExportResult result)
     {
-        string? outputFolder = _lastExportResult?.OutputFolder ?? _sessionStore.OutputFolderPath;
+        CompletionStatusTextBlock.Text = "Export completed successfully.";
+        OutputFolderTextBlock.Text = $"Output folder: {result.OutputFolder}";
 
-        OpenOutputFolderButton.IsEnabled =
-            !string.IsNullOrWhiteSpace(outputFolder) &&
-            Directory.Exists(outputFolder);
+        RenderRunSummary(result.RunSummary);
+        RenderGeneratedFiles(result);
+    }
+
+    private void RenderRunSummary(RunSummary runSummary)
+    {
+        RunSummaryDetailsTextBlock.Text =
+            $"Source CSV: {ValueOrNotProvided(runSummary.SourceCsvPath)}{Environment.NewLine}" +
+            $"Subject-list mode: {ValueOrNotProvided(runSummary.SubjectListMode)}{Environment.NewLine}" +
+            $"Subject-list folder: {ValueOrNotProvided(runSummary.SubjectListFolderPath)}{Environment.NewLine}" +
+            $"Total records read: {runSummary.TotalRecordsRead}{Environment.NewLine}" +
+            $"Run started: {runSummary.RunStartedAt:yyyy-MM-dd HH:mm:ss}{Environment.NewLine}" +
+            $"Run ended: {runSummary.RunEndedAt:yyyy-MM-dd HH:mm:ss}";
+
+        CannotSortCountTextBlock.Text = $"CannotSort count: {runSummary.CannotSortCount}";
+
+        CategoryCountsListView.Items.Clear();
+
+        foreach (var item in runSummary.MatchedRecordCounts.OrderBy(item => item.Key.Value, StringComparer.OrdinalIgnoreCase))
+        {
+            int removedCount = runSummary.RemovedRecordCounts.TryGetValue(item.Key, out int count)
+                ? count
+                : 0;
+
+            CategoryCountsListView.Items.Add(
+                $"{ToDisplayName(item.Key.Value)} — {item.Value} matched/active, {removedCount} removed");
+        }
+
+        CategoryCountsSummaryTextBlock.Text =
+            $"{runSummary.MatchedRecordCounts.Count} selected categor{(runSummary.MatchedRecordCounts.Count == 1 ? "y" : "ies")} summarized.";
     }
 
     private void RenderGeneratedFiles(HtmlExportResult result)
@@ -161,6 +188,67 @@ public sealed partial class ExportFinishPage : Page
         OpenOutputFolderButton.IsEnabled = !isBusy &&
             !string.IsNullOrWhiteSpace(_sessionStore.OutputFolderPath) &&
             Directory.Exists(_sessionStore.OutputFolderPath);
+
+        OpenLogsButton.IsEnabled = !isBusy;
+    }
+
+    private void RefreshOpenButtons()
+    {
+        string? outputFolder = _lastExportResult?.OutputFolder ?? _sessionStore.OutputFolderPath;
+
+        OpenOutputFolderButton.IsEnabled =
+            !string.IsNullOrWhiteSpace(outputFolder) &&
+            Directory.Exists(outputFolder);
+
+        OpenLogsButton.IsEnabled = true;
+    }
+
+    private void OpenFolder(string? folderPath, string title, string message)
+    {
+        if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
+        {
+            ShowError(title, message);
+            return;
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = folderPath,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            ShowError(title, ex.Message);
+        }
+    }
+
+    private string ResolveLogFolder()
+    {
+        string rootFolder = _config.Logging.UseDocumentsFolder
+            ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            : Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+        return Path.Combine(rootFolder, _config.Logging.LogFolderName);
+    }
+
+    private static string ValueOrNotProvided(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? "Not provided"
+            : value;
+    }
+
+    private static string ToDisplayName(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "Category";
+        }
+
+        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(value);
     }
 
     private void ShowSuccess(string title, string message)

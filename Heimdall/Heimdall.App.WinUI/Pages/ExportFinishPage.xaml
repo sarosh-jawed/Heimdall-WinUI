@@ -5,14 +5,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <ScrollViewer>
-        <StackPanel Spacing="20" MaxWidth="920">
+        <StackPanel Spacing="20" MaxWidth="980">
             <TextBlock
                 Text="Export and finish"
                 FontSize="24"
                 FontWeight="SemiBold" />
 
             <TextBlock
-                Text="Generate the final category HTML files, CannotSortBooks file when needed, and RunSummary file directly into the selected output folder."
+                Text="Generate final HTML files, review the run summary, and open the output folder or logs."
                 TextWrapping="Wrap" />
 
             <InfoBar
@@ -32,39 +32,20 @@
 
                 <StackPanel Spacing="10">
                     <TextBlock
-                        Text="Selected output folder"
+                        Text="Completion status"
                         FontSize="18"
                         FontWeight="SemiBold" />
+
+                    <TextBlock
+                        x:Name="CompletionStatusTextBlock"
+                        Text="Export has not been run yet."
+                        TextWrapping="Wrap" />
 
                     <TextBlock
                         x:Name="OutputFolderTextBlock"
                         Text="No output folder selected yet."
-                        TextWrapping="Wrap" />
-
-                    <TextBlock
-                        Text="Files are saved directly into this folder. Heimdall does not create a monthly subfolder for final HTML exports."
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         TextWrapping="Wrap" />
-                </StackPanel>
-            </Border>
-
-            <Border
-                Padding="20"
-                CornerRadius="8"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1">
-
-                <StackPanel Spacing="8">
-                    <TextBlock
-                        Text="Expected output"
-                        FontSize="18"
-                        FontWeight="SemiBold" />
-
-                    <TextBlock Text="CategoryNewBooksDate.html" TextWrapping="Wrap" />
-                    <TextBlock Text="Example: ArtNewBooks2026-04-28.html" TextWrapping="Wrap" />
-                    <TextBlock Text="CannotSortBooks2026-04-28.html when unmatched records exist." TextWrapping="Wrap" />
-                    <TextBlock Text="RunSummary2026-04-28.txt for audit and troubleshooting." TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
 
@@ -79,6 +60,11 @@
                     Content="Open Output Folder"
                     IsEnabled="False"
                     Click="OpenOutputFolderButton_Click" />
+
+                <Button
+                    x:Name="OpenLogsButton"
+                    Content="Open Logs"
+                    Click="OpenLogsButton_Click" />
             </StackPanel>
 
             <ProgressRing
@@ -87,6 +73,57 @@
                 Visibility="Collapsed"
                 Width="32"
                 Height="32" />
+
+            <Border
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1">
+
+                <StackPanel Spacing="12">
+                    <TextBlock
+                        Text="Run summary"
+                        FontSize="18"
+                        FontWeight="SemiBold" />
+
+                    <TextBlock
+                        x:Name="RunSummaryDetailsTextBlock"
+                        Text="Run summary details will appear after export."
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        TextWrapping="Wrap" />
+
+                    <TextBlock
+                        x:Name="CannotSortCountTextBlock"
+                        Text="CannotSort count: not available yet."
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1">
+
+                <StackPanel Spacing="12">
+                    <TextBlock
+                        Text="Category counts"
+                        FontSize="18"
+                        FontWeight="SemiBold" />
+
+                    <TextBlock
+                        x:Name="CategoryCountsSummaryTextBlock"
+                        Text="Category counts will appear after export."
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        TextWrapping="Wrap" />
+
+                    <ListView
+                        x:Name="CategoryCountsListView"
+                        MaxHeight="220" />
+                </StackPanel>
+            </Border>
 
             <Border
                 Padding="20"
