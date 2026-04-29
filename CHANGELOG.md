@@ -6,6 +6,12 @@ All notable changes to Heimdall WinUI will be documented in this file.
 
 ### Added
 
+- Added table-based HTML email rendering.
+- Added HTML encoding for category names, titles, authors, and summaries.
+- Added readable fallback text for empty author and summary fields.
+- Added renderer tests for HTML safety, empty fields, removed-book exclusion, and CannotSort rendering.
+- Added export-level coverage for encoded HTML output.
+
 - Added functional preview and remove-record behavior.
 - Displayed matched books grouped by selected category.
 - Added book cards with title, author, summary preview, and category-specific remove action.
@@ -75,6 +81,7 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Documented confirmed MVP requirements.
 - Documented planned clean architecture.
 - Documented initial testing and release strategy.
+
 
 
 
