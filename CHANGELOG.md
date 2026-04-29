@@ -6,6 +6,11 @@ All notable changes to Heimdall WinUI will be documented in this file.
 
 ### Added
 
+- Added basic WinUI wizard shell and navigation.
+- Added step rail, progress indicator, Back and Next buttons, busy state, and friendly status area.
+- Added placeholder wizard pages for Start, Load Input, Subject Source, Category Selection, Preview Books, and Export Finish.
+- Prepared the UI structure for future file picker, category loading, preview, and export integration.
+
 - Added complete non-UI workflow orchestration.
 - Expanded wizard session state to store CSV results, subject-list results, preview results, and removed book selections.
 - Added email preview building from category match results.
@@ -48,6 +53,7 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Documented confirmed MVP requirements.
 - Documented planned clean architecture.
 - Documented initial testing and release strategy.
+
 
 
 
