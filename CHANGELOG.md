@@ -6,6 +6,12 @@ All notable changes to Heimdall WinUI will be documented in this file.
 
 ### Added
 
+- Connected the Export & Finish page to the real export workflow.
+- Added final export action from the WinUI wizard.
+- Added generated file list display after export.
+- Added Open Output Folder behavior.
+- Added focused export service tests for file naming, direct output-folder writes, CannotSort generation, RunSummary generation, and expected overwrite behavior.
+
 - Added table-based HTML email rendering.
 - Added HTML encoding for category names, titles, authors, and summaries.
 - Added readable fallback text for empty author and summary fields.
@@ -81,6 +87,7 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Documented confirmed MVP requirements.
 - Documented planned clean architecture.
 - Documented initial testing and release strategy.
+
 
 
 

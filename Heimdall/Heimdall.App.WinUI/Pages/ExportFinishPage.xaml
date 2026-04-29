@@ -5,15 +5,48 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <ScrollViewer>
-        <StackPanel Spacing="20" MaxWidth="860">
+        <StackPanel Spacing="20" MaxWidth="920">
             <TextBlock
                 Text="Export and finish"
                 FontSize="24"
                 FontWeight="SemiBold" />
 
             <TextBlock
-                Text="This page will generate the final category HTML files, CannotSortBooks.html when needed, RunSummary.txt, and logs."
+                Text="Generate the final category HTML files, CannotSortBooks file when needed, and RunSummary file directly into the selected output folder."
                 TextWrapping="Wrap" />
+
+            <InfoBar
+                x:Name="ExportStatusInfoBar"
+                IsOpen="False"
+                IsClosable="True"
+                Severity="Informational"
+                Title="Export status"
+                Message="" />
+
+            <Border
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1">
+
+                <StackPanel Spacing="10">
+                    <TextBlock
+                        Text="Selected output folder"
+                        FontSize="18"
+                        FontWeight="SemiBold" />
+
+                    <TextBlock
+                        x:Name="OutputFolderTextBlock"
+                        Text="No output folder selected yet."
+                        TextWrapping="Wrap" />
+
+                    <TextBlock
+                        Text="Files are saved directly into this folder. Heimdall does not create a monthly subfolder for final HTML exports."
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
 
             <Border
                 Padding="20"
@@ -28,16 +61,57 @@
                         FontSize="18"
                         FontWeight="SemiBold" />
 
-                    <TextBlock Text="One HTML file per selected category." TextWrapping="Wrap" />
-                    <TextBlock Text="CannotSortBooks.html when unmatched records exist." TextWrapping="Wrap" />
-                    <TextBlock Text="RunSummary.txt for audit and troubleshooting." TextWrapping="Wrap" />
-                    <TextBlock Text="Logs under Documents\Heimdall\Logs." TextWrapping="Wrap" />
+                    <TextBlock Text="CategoryNewBooksDate.html" TextWrapping="Wrap" />
+                    <TextBlock Text="Example: ArtNewBooks2026-04-28.html" TextWrapping="Wrap" />
+                    <TextBlock Text="CannotSortBooks2026-04-28.html when unmatched records exist." TextWrapping="Wrap" />
+                    <TextBlock Text="RunSummary2026-04-28.txt for audit and troubleshooting." TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
 
-            <Button
-                Content="Open Output Folder"
-                IsEnabled="False" />
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Button
+                    x:Name="ExportFilesButton"
+                    Content="Export Files"
+                    Click="ExportFilesButton_Click" />
+
+                <Button
+                    x:Name="OpenOutputFolderButton"
+                    Content="Open Output Folder"
+                    IsEnabled="False"
+                    Click="OpenOutputFolderButton_Click" />
+            </StackPanel>
+
+            <ProgressRing
+                x:Name="ExportProgressRing"
+                IsActive="False"
+                Visibility="Collapsed"
+                Width="32"
+                Height="32" />
+
+            <Border
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1">
+
+                <StackPanel Spacing="12">
+                    <TextBlock
+                        Text="Generated files"
+                        FontSize="18"
+                        FontWeight="SemiBold" />
+
+                    <TextBlock
+                        x:Name="GeneratedFilesSummaryTextBlock"
+                        Text="No files have been exported yet."
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        TextWrapping="Wrap" />
+
+                    <ListView
+                        x:Name="GeneratedFilesListView"
+                        MaxHeight="260" />
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </Page>
