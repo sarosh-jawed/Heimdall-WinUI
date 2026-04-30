@@ -7,6 +7,10 @@ using Heimdall.App.WinUI.Navigation;
 using Heimdall.App.WinUI.Pages;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Heimdall.Application.Contracts;
+using Heimdall.Application.Errors;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Heimdall.App.WinUI;
 
@@ -52,7 +56,8 @@ public sealed partial class MainWindow : Window
         };
 
     private int _currentStepIndex;
-
+    private readonly IUserMessageService _userMessageService;
+    private readonly ILogger<MainWindow> _logger;
     public static IntPtr WindowHandle { get; private set; }
 
     public MainWindow()
@@ -60,6 +65,8 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
 
         WindowHandle = WinRT.Interop.WindowNative.GetWindowHandle(this);
+        _userMessageService = App.Services.GetRequiredService<IUserMessageService>();
+        _logger = App.Services.GetRequiredService<ILogger<MainWindow>>();
 
         StepsListView.Items.Clear();
 
@@ -116,7 +123,14 @@ public sealed partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            ShowError("Navigation failed", ex.Message);
+            _logger.LogError(ex, "Wizard navigation failed. TargetStepIndex={TargetStepIndex}", targetStepIndex);
+
+            UserMessage message = _userMessageService.BuildMessage(
+                ex,
+                "Navigation failed",
+                "Heimdall could not continue to the next step. Resolve the current step and try again.");
+
+            ShowError(message.Title, message.Message);
         }
         finally
         {

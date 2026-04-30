@@ -1,10 +1,11 @@
-﻿using System.Globalization;
+using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Heimdall.Application.Configuration;
 using Heimdall.Application.Contracts;
 using Heimdall.Domain.Models;
 using Heimdall.Domain.Results;
+using Heimdall.Application.Errors;
 
 namespace Heimdall.Infrastructure.Csv;
 
@@ -43,6 +44,15 @@ public sealed class CsvBookRecordReader : ICsvBookRecordReader
             throw new ArgumentException("CSV path cannot be blank.", nameof(csvPath));
         }
 
+        if (!Path.GetExtension(csvPath).Equals(".csv", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new UserFriendlyException(
+                HeimdallErrorCode.CsvWrongFileType,
+                "Wrong file type",
+                "The selected input file is not a CSV file.",
+                "Select the official FOLIO CSV file with a .csv extension.");
+        }
+
         if (!File.Exists(csvPath))
         {
             throw new FileNotFoundException("The selected FOLIO CSV file was not found.", csvPath);
@@ -64,19 +74,31 @@ public sealed class CsvBookRecordReader : ICsvBookRecordReader
             PrepareHeaderForMatch = args => args.Header?.Trim().ToLowerInvariant() ?? string.Empty
         };
 
-        await using var stream = File.OpenRead(csvPath);
+        await using var stream = OpenCsvStream(csvPath);
         using var streamReader = new StreamReader(stream);
         using var csvReader = new CsvReader(streamReader, csvConfiguration);
 
         if (!await csvReader.ReadAsync())
         {
-            throw new InvalidOperationException("The selected CSV file is empty.");
+            throw new UserFriendlyException(
+                HeimdallErrorCode.CsvEmpty,
+                "CSV is empty",
+                "The selected CSV file is empty.",
+                "Export a fresh official FOLIO CSV and try again.");
         }
 
         csvReader.ReadHeader();
 
-        var headerRecord = csvReader.HeaderRecord
-            ?? throw new InvalidOperationException("The selected CSV file does not contain a header row.");
+        var headerRecord = csvReader.HeaderRecord;
+
+        if (headerRecord is null || headerRecord.Length == 0)
+        {
+            throw new UserFriendlyException(
+                HeimdallErrorCode.CsvEmpty,
+                "CSV header missing",
+                "The selected CSV file does not contain a readable header row.",
+                "Export a fresh official FOLIO CSV and try again.");
+        }
 
         _schemaValidator.ValidateOrThrow(headerRecord);
 
@@ -100,9 +122,65 @@ public sealed class CsvBookRecordReader : ICsvBookRecordReader
             }
         }
 
+        if (totalRows == 0)
+        {
+            throw new UserFriendlyException(
+                HeimdallErrorCode.CsvEmpty,
+                "CSV has no book records",
+                "The selected CSV has a header row but no book records.",
+                "Export a fresh official FOLIO CSV that contains book rows.");
+        }
+
+        if (books.Count == 0)
+        {
+            throw new UserFriendlyException(
+                HeimdallErrorCode.CsvMalformed,
+                "CSV has no usable book records",
+                "Heimdall read the CSV, but every row was skipped because the records were malformed.",
+                "Check the RunSummary/logs or export a fresh official FOLIO CSV.");
+        }
+
         return new CsvLoadResult(books, totalRows, warnings);
     }
 
+    private static FileStream OpenCsvStream(string csvPath)
+    {
+        try
+        {
+            return new FileStream(
+                csvPath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.ReadWrite);
+        }
+        catch (FileNotFoundException ex)
+        {
+            throw new UserFriendlyException(
+                HeimdallErrorCode.CsvFileNotFound,
+                "CSV file not found",
+                "The selected FOLIO CSV file could not be found.",
+                "Select the CSV file again.",
+                ex);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            throw new UserFriendlyException(
+                HeimdallErrorCode.CsvFileUnavailable,
+                "CSV file cannot be accessed",
+                "Heimdall does not have permission to read the selected CSV file.",
+                "Move the file to a normal folder such as Documents or Desktop, then try again.",
+                ex);
+        }
+        catch (IOException ex)
+        {
+            throw new UserFriendlyException(
+                HeimdallErrorCode.CsvFileUnavailable,
+                "CSV file unavailable",
+                "Heimdall could not read the selected CSV file.",
+                "Close the file if it is open in Excel or another program, then try again.",
+                ex);
+        }
+    }
     private BookRecord MapCurrentRow(CsvReader csvReader)
     {
         var instanceId = GetRequiredField(csvReader, _config.CsvColumns.RecordIdColumnName);

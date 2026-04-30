@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +9,8 @@ using Heimdall.Application.Workflow;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Heimdall.Application.Errors;
+using Microsoft.Extensions.Logging;
 
 namespace Heimdall.App.WinUI.Pages;
 
@@ -17,7 +19,8 @@ public sealed partial class SubjectSourcePage : Page, IWizardStepPage
     private readonly IFilePickerService _filePickerService;
     private readonly IWorkflowOrchestrator _workflowOrchestrator;
     private readonly WizardSessionStore _sessionStore;
-
+    private readonly IUserMessageService _userMessageService;
+    private readonly ILogger<SubjectSourcePage> _logger;
     public SubjectSourcePage()
     {
         InitializeComponent();
@@ -25,6 +28,8 @@ public sealed partial class SubjectSourcePage : Page, IWizardStepPage
         _filePickerService = App.Services.GetRequiredService<IFilePickerService>();
         _workflowOrchestrator = App.Services.GetRequiredService<IWorkflowOrchestrator>();
         _sessionStore = App.Services.GetRequiredService<WizardSessionStore>();
+        _userMessageService = App.Services.GetRequiredService<IUserMessageService>();
+        _logger = App.Services.GetRequiredService<ILogger<SubjectSourcePage>>();
 
         Loaded += SubjectSourcePage_Loaded;
     }
@@ -42,8 +47,15 @@ public sealed partial class SubjectSourcePage : Page, IWizardStepPage
         }
         catch (Exception ex)
         {
-            ShowError("Subject-list source failed", ex.Message);
-            return WizardStepResult.Failure("Subject-list source failed", ex.Message);
+            _logger.LogError(ex, "Subject-list source step failed.");
+
+            UserMessage message = _userMessageService.BuildMessage(
+                ex,
+                "Subject-list source failed",
+                "Heimdall could not prepare the selected subject-list source. Check the selected folder or try fresh generation.");
+
+            ShowError(message.Title, message.Message);
+            return WizardStepResult.Failure(message.Title, message.Message);
         }
     }
 
@@ -146,7 +158,14 @@ public sealed partial class SubjectSourcePage : Page, IWizardStepPage
         }
         catch (Exception ex)
         {
-            ShowError("Existing Bragi folder selection failed", ex.Message);
+            _logger.LogError(ex, "Existing Bragi folder picker failed.");
+
+            UserMessage message = _userMessageService.BuildMessage(
+                ex,
+                "Existing Bragi folder selection failed",
+                "Heimdall could not open the folder picker. Try again or restart the app.");
+
+            ShowError(message.Title, message.Message);
         }
         finally
         {

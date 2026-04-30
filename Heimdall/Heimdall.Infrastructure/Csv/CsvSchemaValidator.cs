@@ -1,5 +1,6 @@
-﻿using Heimdall.Application.Configuration;
+using Heimdall.Application.Configuration;
 using Heimdall.Application.Contracts;
+using Heimdall.Application.Errors;
 
 namespace Heimdall.Infrastructure.Csv;
 
@@ -16,7 +17,11 @@ public sealed class CsvSchemaValidator : ICsvSchemaValidator
     {
         if (columnNames.Count == 0)
         {
-            throw new InvalidOperationException("The selected CSV file does not contain a header row.");
+            throw new UserFriendlyException(
+                HeimdallErrorCode.CsvEmpty,
+                "CSV header missing",
+                "The selected CSV file does not contain a header row.",
+                "Export a fresh official FOLIO CSV and try again.");
         }
 
         var existingColumns = columnNames
@@ -30,9 +35,11 @@ public sealed class CsvSchemaValidator : ICsvSchemaValidator
 
         if (missingColumns.Length > 0)
         {
-            throw new InvalidOperationException(
-                "The selected CSV file is missing required FOLIO column(s): "
-                + string.Join(", ", missingColumns));
+            throw new UserFriendlyException(
+                HeimdallErrorCode.CsvMissingRequiredColumns,
+                "CSV is missing required columns",
+                "The selected CSV file does not match the expected official FOLIO export format.",
+                "Missing column(s): " + string.Join(", ", missingColumns) + ". Export the CSV again with the required FOLIO columns.");
         }
     }
 }

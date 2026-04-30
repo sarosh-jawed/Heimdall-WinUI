@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Heimdall.App.WinUI.Services;
 using Heimdall.Application.Configuration;
@@ -21,6 +21,7 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
+using Heimdall.Application.Errors;
 
 namespace Heimdall.App.WinUI;
 
@@ -102,6 +103,7 @@ public partial class App : Microsoft.UI.Xaml.Application
                 services.AddSingleton(config);
                 services.AddSingleton<IHeimdallConfigLoader, HeimdallConfigLoader>();
                 services.AddSingleton<IHeimdallConfigValidator, HeimdallConfigValidator>();
+                services.AddSingleton<IUserMessageService, UserMessageService>();
 
                 services.AddSingleton<ISummaryExtractor, SummaryExtractor>();
                 services.AddSingleton<ICsvSchemaValidator, CsvSchemaValidator>();

@@ -1,10 +1,11 @@
-﻿using Heimdall.Application.Contracts;
+using Heimdall.Application.Contracts;
 using Heimdall.BragiCore.Categorization;
 using Heimdall.BragiCore.Configuration;
 using Heimdall.BragiCore.Export;
 using Heimdall.BragiCore.Extraction;
 using Heimdall.Domain.Models;
 using Heimdall.Domain.Results;
+using Heimdall.Application.Errors;
 
 namespace Heimdall.Infrastructure.Bragi;
 
@@ -35,38 +36,73 @@ public sealed class BragiSubjectListGenerator : IBragiSubjectListGenerator
         string outputFolder,
         CancellationToken cancellationToken = default)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(sourceCsvPath);
-        ArgumentException.ThrowIfNullOrWhiteSpace(outputFolder);
+        if (string.IsNullOrWhiteSpace(sourceCsvPath))
+        {
+            throw new UserFriendlyException(
+                HeimdallErrorCode.CsvPathBlank,
+                "CSV required",
+                "The FOLIO CSV path is missing.",
+                "Go back to Load Input and select the official FOLIO CSV.");
+        }
 
-        var csvLoadResult = await _csvBookRecordReader.ReadAsync(sourceCsvPath, cancellationToken);
+        if (string.IsNullOrWhiteSpace(outputFolder))
+        {
+            throw new UserFriendlyException(
+                HeimdallErrorCode.OutputFolderBlank,
+                "Output folder required",
+                "The output folder path is missing.",
+                "Go back to Load Input and select an output folder.");
+        }
 
-        var extractionResult = _subjectExtractionService.ExtractFromBookRecords(
-            csvLoadResult.Books,
-            _options.BehaviorOptions);
+        try
+        {
+            var csvLoadResult = await _csvBookRecordReader.ReadAsync(sourceCsvPath, cancellationToken);
 
-        var categorizationResult = _categorizationService.Categorize(
-            extractionResult,
-            _options.CategoryRules,
-            _options.BehaviorOptions);
+            var extractionResult = _subjectExtractionService.ExtractFromBookRecords(
+                csvLoadResult.Books,
+                _options.BehaviorOptions);
 
-        var exportResult = await _textExportService.ExportAsync(
-            outputFolder,
-            _options.CategoryRules,
-            categorizationResult,
-            _options,
-            cancellationToken);
+            var categorizationResult = _categorizationService.Categorize(
+                extractionResult,
+                _options.CategoryRules,
+                _options.BehaviorOptions);
 
-        var categorySubjectLists = BuildCategorySubjectLists(exportResult);
+            var exportResult = await _textExportService.ExportAsync(
+                outputFolder,
+                _options.CategoryRules,
+                categorizationResult,
+                _options,
+                cancellationToken);
 
-        var warnings = csvLoadResult.Warnings
-            .Concat(extractionResult.Warnings)
-            .ToArray();
+            var categorySubjectLists = BuildCategorySubjectLists(exportResult);
 
-        return new BragiGenerationResult(
-            Success: true,
-            OutputFolder: outputFolder,
-            SubjectListLoadResult: new SubjectListLoadResult(categorySubjectLists, warnings),
-            Warnings: warnings);
+            var warnings = csvLoadResult.Warnings
+                .Concat(extractionResult.Warnings)
+                .ToArray();
+
+            return new BragiGenerationResult(
+                Success: true,
+                OutputFolder: outputFolder,
+                SubjectListLoadResult: new SubjectListLoadResult(categorySubjectLists, warnings),
+                Warnings: warnings);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (UserFriendlyException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new UserFriendlyException(
+                HeimdallErrorCode.BragiGenerationFailed,
+                "Bragi subject-list generation failed",
+                "Heimdall could not generate fresh Bragi subject lists from the selected CSV.",
+                "Try using an existing Bragi output folder or export a fresh FOLIO CSV.",
+                ex);
+        }
     }
 
     private IReadOnlyList<CategorySubjectList> BuildCategorySubjectLists(BragiTextExportResult exportResult)

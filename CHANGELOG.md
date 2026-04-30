@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to Heimdall WinUI will be documented in this file.
 
@@ -94,7 +94,18 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Documented planned clean architecture.
 - Documented initial testing and release strategy.
 
+- Central user-friendly error model and message mapper.
+- Friendly CSV errors for missing columns, wrong file type, empty CSV, locked/unavailable files, and malformed records.
+- Friendly Bragi folder errors for missing folders, empty folders, and unreadable subject files.
+- Friendly export errors for missing/unwritable output folders and locked output files.
+- Export overwrite warnings when expected files already exist.
+- UI-level exception mapping so users see recoverable messages instead of raw technical exceptions.
+- Technical exception logging from wizard pages and navigation.
 
+### Verified
+- App remains recoverable after invalid input.
+- Technical details are logged.
+- User-facing messages stay clear and staff-friendly.
 
 
 

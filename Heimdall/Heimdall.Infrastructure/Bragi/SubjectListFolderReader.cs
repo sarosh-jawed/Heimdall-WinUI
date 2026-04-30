@@ -1,6 +1,7 @@
-﻿using Heimdall.Application.Contracts;
+using Heimdall.Application.Contracts;
 using Heimdall.Domain.Models;
 using Heimdall.Domain.Results;
+using Heimdall.Application.Errors;
 
 namespace Heimdall.Infrastructure.Bragi;
 
@@ -19,12 +20,20 @@ public sealed class SubjectListFolderReader : ISubjectListFolderReader
     {
         if (string.IsNullOrWhiteSpace(subjectListFolder))
         {
-            throw new ArgumentException("Subject-list folder path cannot be blank.", nameof(subjectListFolder));
+            throw new UserFriendlyException(
+                HeimdallErrorCode.SubjectListFolderBlank,
+                "Existing Bragi folder required",
+                "No existing Bragi subject-list folder was selected.",
+                "Select the Bragi output folder and try again.");
         }
 
         if (!Directory.Exists(subjectListFolder))
         {
-            throw new DirectoryNotFoundException("The selected Bragi subject-list folder was not found.");
+            throw new UserFriendlyException(
+                HeimdallErrorCode.SubjectListFolderNotFound,
+                "Existing Bragi folder not found",
+                "The selected Bragi subject-list folder could not be found.",
+                "Select the folder again.");
         }
 
         var detectionResult = _categoryFileDetector.Detect(subjectListFolder);
@@ -50,7 +59,11 @@ public sealed class SubjectListFolderReader : ISubjectListFolderReader
 
         if (categorySubjectLists.Count == 0)
         {
-            throw new InvalidOperationException("No Bragi subject-list files could be read from the selected folder.");
+            throw new UserFriendlyException(
+                HeimdallErrorCode.SubjectListFilesUnreadable,
+                "Bragi subject files could not be read",
+                "Heimdall found the folder, but no usable Bragi subject-list files could be read.",
+                "Make sure the folder contains readable files such as ArtSubjects.txt or FictionSubjects.txt.");
         }
 
         return new SubjectListLoadResult(categorySubjectLists, warnings);
@@ -61,7 +74,30 @@ public sealed class SubjectListFolderReader : ISubjectListFolderReader
         ICollection<string> warnings,
         CancellationToken cancellationToken)
     {
-        var lines = await File.ReadAllLinesAsync(filePath, cancellationToken);
+        string[] lines;
+
+        try
+        {
+            lines = await File.ReadAllLinesAsync(filePath, cancellationToken);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            throw new UserFriendlyException(
+                HeimdallErrorCode.SubjectListFilesUnreadable,
+                "Bragi subject file cannot be accessed",
+                $"Heimdall does not have permission to read {Path.GetFileName(filePath)}.",
+                "Check the folder permissions or select a different Bragi output folder.",
+                ex);
+        }
+        catch (IOException ex)
+        {
+            throw new UserFriendlyException(
+                HeimdallErrorCode.SubjectListFilesUnreadable,
+                "Bragi subject file unavailable",
+                $"Heimdall could not read {Path.GetFileName(filePath)}.",
+                "Close the file if it is open in another program, then try again.",
+                ex);
+        }
 
         var preparedLines = lines
             .Select(line => line.Trim())
