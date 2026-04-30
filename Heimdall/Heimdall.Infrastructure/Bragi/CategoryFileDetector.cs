@@ -1,7 +1,8 @@
-﻿using Heimdall.Application.Contracts;
+using Heimdall.Application.Contracts;
 using Heimdall.BragiCore.Configuration;
 using Heimdall.Domain.Models;
 using Heimdall.Domain.Results;
+using Heimdall.Application.Errors;
 
 namespace Heimdall.Infrastructure.Bragi;
 
@@ -21,12 +22,20 @@ public sealed class CategoryFileDetector : ICategoryFileDetector
     {
         if (string.IsNullOrWhiteSpace(subjectListFolder))
         {
-            throw new ArgumentException("Subject-list folder path cannot be blank.", nameof(subjectListFolder));
+            throw new UserFriendlyException(
+            HeimdallErrorCode.SubjectListFolderBlank,
+            "Existing Bragi folder required",
+            "No existing Bragi subject-list folder was selected.",
+            "Select a folder that contains Bragi subject files such as ArtSubjects.txt.");
         }
 
         if (!Directory.Exists(subjectListFolder))
         {
-            throw new DirectoryNotFoundException("The selected Bragi subject-list folder was not found.");
+            throw new UserFriendlyException(
+                 HeimdallErrorCode.SubjectListFolderNotFound,
+                 "Existing Bragi folder not found",
+                 "The selected Bragi subject-list folder could not be found.",
+                 "Select the existing Bragi output folder again.");
         }
 
         var filesByName = Directory
@@ -62,7 +71,11 @@ public sealed class CategoryFileDetector : ICategoryFileDetector
 
         if (detectedCategories.Count == 0)
         {
-            throw new InvalidOperationException(NoFilesFoundMessage);
+            throw new UserFriendlyException(
+                HeimdallErrorCode.SubjectListFilesMissing,
+                "No Bragi subject files found",
+                NoFilesFoundMessage,
+                "Select a folder that contains files such as ArtSubjects.txt, BusinessSubjects.txt, or ComputerSubjects.txt.");
         }
 
         if (missingExpectedFiles.Count > 0)

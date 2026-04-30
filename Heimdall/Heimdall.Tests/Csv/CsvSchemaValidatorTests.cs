@@ -1,5 +1,6 @@
-﻿using Heimdall.Application.Configuration;
+using Heimdall.Application.Configuration;
 using Heimdall.Infrastructure.Csv;
+using Heimdall.Application.Errors;
 
 namespace Heimdall.Tests.Csv;
 
@@ -29,15 +30,17 @@ public sealed class CsvSchemaValidatorTests
 
         var columns = new[]
         {
-            "instances.title",
-            "instances.instance_primary_contributor",
-            "instances.notes",
-            "instances.id"
-        };
+        "instances.title",
+        "instances.instance_primary_contributor",
+        "instances.notes",
+        "instances.id"
+    };
 
-        var exception = Assert.Throws<InvalidOperationException>(() => validator.ValidateOrThrow(columns));
+        var exception = Assert.Throws<UserFriendlyException>(() => validator.ValidateOrThrow(columns));
 
-        Assert.Contains("instances.subjects", exception.Message);
+        Assert.Equal(HeimdallErrorCode.CsvMissingRequiredColumns, exception.ErrorCode);
+        Assert.Equal("CSV is missing required columns", exception.Title);
+        Assert.Contains("instances.subjects", exception.FullUserMessage);
     }
 
     private static HeimdallConfig CreateConfig()

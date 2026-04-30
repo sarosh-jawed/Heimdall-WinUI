@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +9,8 @@ using Heimdall.Application.Workflow;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Heimdall.Application.Errors;
+using Microsoft.Extensions.Logging;
 
 namespace Heimdall.App.WinUI.Pages;
 
@@ -17,6 +19,8 @@ public sealed partial class LoadInputPage : Page, IWizardStepPage
     private readonly IFilePickerService _filePickerService;
     private readonly IWorkflowOrchestrator _workflowOrchestrator;
     private readonly WizardSessionStore _sessionStore;
+    private readonly IUserMessageService _userMessageService;
+    private readonly ILogger<LoadInputPage> _logger;
 
     public LoadInputPage()
     {
@@ -25,6 +29,8 @@ public sealed partial class LoadInputPage : Page, IWizardStepPage
         _filePickerService = App.Services.GetRequiredService<IFilePickerService>();
         _workflowOrchestrator = App.Services.GetRequiredService<IWorkflowOrchestrator>();
         _sessionStore = App.Services.GetRequiredService<WizardSessionStore>();
+        _userMessageService = App.Services.GetRequiredService<IUserMessageService>();
+        _logger = App.Services.GetRequiredService<ILogger<LoadInputPage>>();
 
         Loaded += LoadInputPage_Loaded;
     }
@@ -70,8 +76,15 @@ public sealed partial class LoadInputPage : Page, IWizardStepPage
         }
         catch (Exception ex)
         {
-            ShowError("CSV load failed", ex.Message);
-            return WizardStepResult.Failure("CSV load failed", ex.Message);
+            _logger.LogError(ex, "CSV load failed from Load Input page.");
+
+            UserMessage message = _userMessageService.BuildMessage(
+                ex,
+                "CSV load failed",
+                "Heimdall could not load the selected CSV. Check that it is the official FOLIO CSV and try again.");
+
+            ShowError(message.Title, message.Message);
+            return WizardStepResult.Failure(message.Title, message.Message);
         }
     }
 
@@ -107,7 +120,14 @@ public sealed partial class LoadInputPage : Page, IWizardStepPage
         }
         catch (Exception ex)
         {
-            ShowError("CSV selection failed", ex.Message);
+            _logger.LogError(ex, "CSV picker failed.");
+
+            UserMessage message = _userMessageService.BuildMessage(
+                ex,
+                "CSV selection failed",
+                "Heimdall could not open the CSV picker. Try again or restart the app.");
+
+            ShowError(message.Title, message.Message);
         }
         finally
         {
@@ -136,7 +156,14 @@ public sealed partial class LoadInputPage : Page, IWizardStepPage
         }
         catch (Exception ex)
         {
-            ShowError("Output folder selection failed", ex.Message);
+            _logger.LogError(ex, "Output folder picker failed.");
+
+            UserMessage message = _userMessageService.BuildMessage(
+                ex,
+                "Output folder selection failed",
+                "Heimdall could not open the output folder picker. Try again or restart the app.");
+
+            ShowError(message.Title, message.Message);
         }
         finally
         {

@@ -1,5 +1,6 @@
-﻿using Heimdall.BragiCore.Configuration;
+using Heimdall.BragiCore.Configuration;
 using Heimdall.Infrastructure.Bragi;
+using Heimdall.Application.Errors;
 
 namespace Heimdall.Tests.Bragi;
 
@@ -36,9 +37,11 @@ public sealed class CategoryFileDetectorTests
         var missingFolder = Path.Combine(Path.GetTempPath(), $"heimdall-missing-{Guid.NewGuid():N}");
         var detector = new CategoryFileDetector(new BragiCoreOptions());
 
-        var exception = Assert.Throws<DirectoryNotFoundException>(() => detector.Detect(missingFolder));
+        var exception = Assert.Throws<UserFriendlyException>(() => detector.Detect(missingFolder));
 
-        Assert.Contains("selected Bragi subject-list folder was not found", exception.Message);
+        Assert.Equal(HeimdallErrorCode.SubjectListFolderNotFound, exception.ErrorCode);
+        Assert.Equal("Existing Bragi folder not found", exception.Title);
+        Assert.Contains("could not be found", exception.FullUserMessage);
     }
 
     [Fact]
@@ -50,9 +53,11 @@ public sealed class CategoryFileDetectorTests
         {
             var detector = new CategoryFileDetector(new BragiCoreOptions());
 
-            var exception = Assert.Throws<InvalidOperationException>(() => detector.Detect(folder));
+            var exception = Assert.Throws<UserFriendlyException>(() => detector.Detect(folder));
 
-            Assert.Equal("No Bragi subject-list files were found in the selected folder.", exception.Message);
+            Assert.Equal(HeimdallErrorCode.SubjectListFilesMissing, exception.ErrorCode);
+            Assert.Equal("No Bragi subject files found", exception.Title);
+            Assert.Contains("No Bragi subject-list files were found", exception.FullUserMessage);
         }
         finally
         {

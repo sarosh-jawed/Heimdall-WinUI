@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -11,14 +11,20 @@ using Heimdall.Domain.Results;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System.Runtime.Versioning;
+using Heimdall.Application.Errors;
+using Microsoft.Extensions.Logging;
 
 namespace Heimdall.App.WinUI.Pages;
 
+[SupportedOSPlatform("windows10.0.17763.0")]
 public sealed partial class ExportFinishPage : Page
 {
     private readonly IWorkflowOrchestrator _workflowOrchestrator;
     private readonly WizardSessionStore _sessionStore;
     private readonly HeimdallConfig _config;
+    private readonly IUserMessageService _userMessageService;
+    private readonly ILogger<ExportFinishPage> _logger;
 
     private HtmlExportResult? _lastExportResult;
 
@@ -29,6 +35,8 @@ public sealed partial class ExportFinishPage : Page
         _workflowOrchestrator = App.Services.GetRequiredService<IWorkflowOrchestrator>();
         _sessionStore = App.Services.GetRequiredService<WizardSessionStore>();
         _config = App.Services.GetRequiredService<HeimdallConfig>();
+        _userMessageService = App.Services.GetRequiredService<IUserMessageService>();
+        _logger = App.Services.GetRequiredService<ILogger<ExportFinishPage>>();
 
         Loaded += ExportFinishPage_Loaded;
     }
@@ -76,7 +84,14 @@ public sealed partial class ExportFinishPage : Page
         }
         catch (Exception ex)
         {
-            ShowError("Export failed", ex.Message);
+            _logger.LogError(ex, "Export failed from Export Finish page.");
+
+            UserMessage message = _userMessageService.BuildMessage(
+                ex,
+                "Export failed",
+                "Heimdall could not export the final files. Check the output folder and try again.");
+
+            ShowError(message.Title, message.Message);
         }
         finally
         {
@@ -203,11 +218,11 @@ public sealed partial class ExportFinishPage : Page
         OpenLogsButton.IsEnabled = true;
     }
 
-    private void OpenFolder(string? folderPath, string title, string message)
+    private void OpenFolder(string? folderPath, string title, string fallbackMessage)
     {
         if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
         {
-            ShowError(title, message);
+            ShowError(title, fallbackMessage);
             return;
         }
 
@@ -221,7 +236,14 @@ public sealed partial class ExportFinishPage : Page
         }
         catch (Exception ex)
         {
-            ShowError(title, ex.Message);
+            _logger.LogError(ex, "Could not open folder. FolderPath={FolderPath}", folderPath);
+
+            UserMessage userMessage = _userMessageService.BuildMessage(
+                ex,
+                title,
+                fallbackMessage);
+
+            ShowError(userMessage.Title, userMessage.Message);
         }
     }
 
