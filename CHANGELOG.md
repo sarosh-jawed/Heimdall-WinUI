@@ -102,6 +102,8 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - UI-level exception mapping so users see recoverable messages instead of raw technical exceptions.
 - Technical exception logging from wizard pages and navigation.
 
+- Added automated regression tests covering official CSV loading, required schema validation, Bragi fresh generation, existing subject-list folder mode, multi-category matching, preview removal, HTML rendering, CannotSort output, and RunSummary export.
+
 ### Verified
 - App remains recoverable after invalid input.
 - Technical details are logged.
