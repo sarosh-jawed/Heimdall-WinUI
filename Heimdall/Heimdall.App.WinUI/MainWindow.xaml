@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Window
     x:Class="Heimdall.App.WinUI.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -12,35 +12,42 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid
+        x:Name="RootGrid"
+        MinWidth="1120"
+        MinHeight="720"
+        Background="{StaticResource HeimdallPageBackgroundBrush}">
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- Left wizard rail -->
+        <!-- Left wizard rail. Steps are readable, and future steps are locked until reached through the workflow. -->
         <Border
             Grid.Column="0"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="0,0,1,0"
-            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+            Background="{StaticResource HeimdallSidebarBrush}"
+            BorderBrush="{StaticResource HeimdallGoldBrush}"
+            BorderThickness="0,0,1,0">
 
             <Grid Padding="24">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="0" Spacing="6">
+                <StackPanel Grid.Row="0" Spacing="8">
                     <TextBlock
                         Text="Heimdall"
-                        FontSize="28"
-                        FontWeight="SemiBold" />
+                        FontSize="30"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource HeimdallSidebarTextBrush}" />
 
                     <TextBlock
                         Text="New-book email generator"
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Foreground="{StaticResource HeimdallSidebarMutedTextBrush}"
                         TextWrapping="Wrap" />
                 </StackPanel>
 
@@ -55,8 +62,44 @@
                 <ListView
                     x:Name="StepsListView"
                     Grid.Row="2"
-                    IsHitTestVisible="False"
-                    SelectionMode="Single" />
+                    Background="Transparent"
+                    BorderThickness="0"
+                    SelectionMode="Single"
+                    SelectionChanged="StepsListView_SelectionChanged"
+                    ToolTipService.ToolTip="Use this sidebar to return to steps that have already been unlocked.">
+
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Margin" Value="0,3,0,3" />
+                            <Setter Property="MinHeight" Value="54" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+
+                <Border
+                    Grid.Row="3"
+                    Margin="0,20,0,0"
+                    Padding="14"
+                    CornerRadius="8"
+                    Background="#182B46"
+                    BorderBrush="#334C70"
+                    BorderThickness="1">
+
+                    <StackPanel Spacing="6">
+                        <TextBlock
+                            Text="Workflow guide"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource HeimdallSidebarTextBrush}" />
+
+                        <TextBlock
+                            Text="Complete each step once. After a step is unlocked, you can return to it from the sidebar."
+                            FontSize="12"
+                            Foreground="{StaticResource HeimdallSidebarMutedTextBrush}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
             </Grid>
         </Border>
 
@@ -71,14 +114,15 @@
 
             <Border
                 Grid.Row="0"
-                Padding="32,28,32,20"
+                Padding="36,30,36,22"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="0,0,0,1">
 
                 <StackPanel Spacing="6">
                     <TextBlock
                         x:Name="StepTitleTextBlock"
-                        FontSize="28"
+                        FontSize="30"
                         FontWeight="SemiBold"
                         Text="Start" />
 
@@ -113,7 +157,7 @@
             <InfoBar
                 x:Name="StatusInfoBar"
                 Grid.Row="1"
-                Margin="32,16,32,0"
+                Margin="36,16,36,0"
                 IsOpen="False"
                 IsClosable="True"
                 Severity="Informational"
@@ -123,11 +167,12 @@
             <Frame
                 x:Name="ContentFrame"
                 Grid.Row="2"
-                Margin="32,24,32,24" />
+                Margin="36,24,36,24" />
 
             <Border
                 Grid.Row="3"
-                Padding="32,18"
+                Padding="36,18"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="0,1,0,0">
 
@@ -151,15 +196,17 @@
 
                         <Button
                             x:Name="BackButton"
-                            MinWidth="96"
+                            MinWidth="104"
                             Content="Back"
+                            ToolTipService.ToolTip="Return to the previous step."
                             Click="BackButton_Click" />
 
                         <Button
                             x:Name="NextButton"
-                            MinWidth="120"
-                            Content="Next"
+                            MinWidth="170"
+                            Content="Start workflow"
                             Style="{StaticResource AccentButtonStyle}"
+                            ToolTipService.ToolTip="Validate this step and continue."
                             Click="NextButton_Click" />
                     </StackPanel>
                 </Grid>

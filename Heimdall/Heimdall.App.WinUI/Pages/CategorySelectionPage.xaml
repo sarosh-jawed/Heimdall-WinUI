@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="Heimdall.App.WinUI.Pages.CategorySelectionPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -7,7 +7,7 @@
     <ScrollViewer>
         <StackPanel Spacing="20" MaxWidth="900">
             <TextBlock
-                Text="Select broad categories"
+                Text="Select email categories"
                 FontSize="24"
                 FontWeight="SemiBold" />
 
@@ -51,7 +51,7 @@
 
                 <StackPanel Spacing="12">
                     <TextBlock
-                        Text="Available categories"
+                        Text="Available email categories"
                         FontSize="18"
                         FontWeight="SemiBold" />
 

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="Heimdall.App.WinUI.Pages.ExportFinishPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -7,7 +7,7 @@
     <ScrollViewer>
         <StackPanel Spacing="20" MaxWidth="980">
             <TextBlock
-                Text="Export and finish"
+                Text="Generate HTML emails"
                 FontSize="24"
                 FontWeight="SemiBold" />
 
@@ -52,18 +52,21 @@
             <StackPanel Orientation="Horizontal" Spacing="12">
                 <Button
                     x:Name="ExportFilesButton"
-                    Content="Export Files"
+                    Content="Generate HTML emails"
+                    ToolTipService.ToolTip="Write the selected category HTML files, CannotSort output, and RunSummary."
                     Click="ExportFilesButton_Click" />
 
                 <Button
                     x:Name="OpenOutputFolderButton"
-                    Content="Open Output Folder"
+                    Content="Open output folder"
+                    ToolTipService.ToolTip="Open the folder where the generated HTML files and RunSummary are saved."
                     IsEnabled="False"
                     Click="OpenOutputFolderButton_Click" />
 
                 <Button
                     x:Name="OpenLogsButton"
-                    Content="Open Logs"
+                    Content="Open logs"
+                    ToolTipService.ToolTip="Open the folder where the log files are saved."
                     Click="OpenLogsButton_Click" />
             </StackPanel>
 

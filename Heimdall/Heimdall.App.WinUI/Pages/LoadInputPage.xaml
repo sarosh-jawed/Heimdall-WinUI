@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="Heimdall.App.WinUI.Pages.LoadInputPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -7,7 +7,7 @@
     <ScrollViewer>
         <StackPanel Spacing="20" MaxWidth="860">
             <TextBlock
-                Text="Load official FOLIO input"
+                Text="Select FOLIO CSV"
                 FontSize="24"
                 FontWeight="SemiBold" />
 
@@ -39,7 +39,8 @@
                     Grid.Row="0"
                     Grid.Column="1"
                     VerticalAlignment="Bottom"
-                    Content="Select CSV"
+                    Content="Select FOLIO CSV"
+                    ToolTipService.ToolTip="Choose the official FOLIO CSV export file."
                     Click="SelectCsvButton_Click" />
 
                 <TextBox
@@ -55,7 +56,8 @@
                     Grid.Row="1"
                     Grid.Column="1"
                     VerticalAlignment="Bottom"
-                    Content="Select Folder"
+                    Content="Choose output folder"
+                    ToolTipService.ToolTip="Choose where Heimdall should save generated HTML files and the RunSummary."
                     Click="SelectOutputFolderButton_Click" />
             </Grid>
 
