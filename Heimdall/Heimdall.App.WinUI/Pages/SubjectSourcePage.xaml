@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="Heimdall.App.WinUI.Pages.SubjectSourcePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -52,7 +52,8 @@
                     x:Name="SelectExistingBragiFolderButton"
                     Grid.Column="1"
                     VerticalAlignment="Bottom"
-                    Content="Select Folder"
+                    Content="Select Bragi folder"
+                    ToolTipService.ToolTip="Choose an existing folder that contains Bragi subject-list text files."
                     IsEnabled="False"
                     Click="SelectExistingBragiFolderButton_Click" />
             </Grid>
