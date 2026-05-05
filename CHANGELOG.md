@@ -5,6 +5,9 @@ All notable changes to Heimdall WinUI will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Added GitHub Actions CI workflow for restore, Release build, regression tests, and full test suite on `windows-latest`.
+- Added CI status badge to README.
+
 - Updated Phase 20 documentation across README and docs.
 - Rewrote README to reflect completed functionality through Phase 19 instead of early planning status.
 - Updated requirements, architecture, test cases, and release documentation.
