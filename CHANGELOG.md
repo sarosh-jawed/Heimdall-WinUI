@@ -5,6 +5,10 @@ All notable changes to Heimdall WinUI will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Updated Phase 20 documentation across README and docs.
+- Rewrote README to reflect completed functionality through Phase 19 instead of early planning status.
+- Updated requirements, architecture, test cases, and release documentation.
+- Added `docs/SCREENSHOTS.md` to guide screenshot capture before release.
 
 - Expanded the Export & Finish page into a completion summary.
 - Added output folder, generated files, category counts, CannotSort count, and run timing display after export.
