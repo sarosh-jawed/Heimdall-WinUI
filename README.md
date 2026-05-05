@@ -1,4 +1,5 @@
 # Heimdall WinUI
+[![ci](https://github.com/sarosh-jawed/Heimdall-WinUI/actions/workflows/ci.yml/badge.svg)](https://github.com/sarosh-jawed/Heimdall-WinUI/actions/workflows/ci.yml)
 
 Heimdall WinUI is a professional Windows desktop application for generating manual HTML new-book email files from official FOLIO CSV book records and Bragi subject-list categories.
 
