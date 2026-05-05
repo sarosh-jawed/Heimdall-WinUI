@@ -5,6 +5,9 @@ All notable changes to Heimdall WinUI will be documented in this file.
 ## [Unreleased]
 
 ### Added
+
+- Added Phase 22 end-to-end manual testing documentation for fresh Bragi generation and existing Bragi folder workflows.
+
 - Added GitHub Actions CI workflow for restore, Release build, regression tests, and full test suite on `windows-latest`.
 - Added CI status badge to README.
 
@@ -112,6 +115,9 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Added automated regression tests covering official CSV loading, required schema validation, Bragi fresh generation, existing subject-list folder mode, multi-category matching, preview removal, HTML rendering, CannotSort output, and RunSummary export.
 
 ### Verified
+- Verified full fresh Bragi generation workflow from CSV selection through HTML export.
+- Verified full existing Bragi folder workflow from CSV selection through HTML export.
+- Verified generated HTML files, CannotSort output, RunSummary, and logs during manual end-to-end testing.
 - App remains recoverable after invalid input.
 - Technical details are logged.
 - User-facing messages stay clear and staff-friendly.
