@@ -26,22 +26,26 @@ Recommended screenshot set:
 03-choose-subject-list-source.png
 04-select-email-categories.png
 05-preview-matched-books.png
-06-generate-html-emails.png
+06-generate-html-emails-before-export.png
 07-export-complete.png
 08-output-folder-example.png
+09-high-level-workflow.png
+10-classification-logic.png
 ```
 
 ## Screenshot Checklist
 
 ```text
-[ ] Start page shows the workflow overview.
-[ ] Select FOLIO CSV page shows CSV and output-folder controls.
-[ ] Choose subject-list source page shows both Bragi options.
-[ ] Select email categories page shows category counts.
-[ ] Preview matched books page shows grouped category preview.
-[ ] Generate HTML emails page shows pre-export state.
-[ ] Export complete page shows success, RunSummary, category counts, and generated files.
-[ ] Output folder screenshot shows generated HTML files and RunSummary.
+[x] Start page shows the workflow overview.
+[x] Select FOLIO CSV page shows CSV and output-folder controls.
+[x] Choose subject-list source page shows both Bragi options.
+[x] Select email categories page shows category counts.
+[x] Preview matched books page shows grouped category preview.
+[x] Generate HTML emails page shows pre-export state.
+[x] Export complete page shows success, RunSummary, category counts, and generated files.
+[x] Output folder screenshot shows generated HTML files and RunSummary.
+[x] High-level workflow diagram shows the complete app workflow.
+[x] Classification logic diagram shows exact matching, multi-category behavior, and CannotSort behavior.
 ```
 
 ## Screenshot Guidelines
@@ -77,4 +81,23 @@ Uncheck: Enable UI Debugging Tools for XAML
 
 ## Current Screenshot Status
 
-Phase 20 creates this documentation file. Final screenshots can be added during release preparation after the documentation and CI phases are complete.
+The Phase 22/Phase 23 preparation screenshot set has been added under:
+
+```text
+docs/screenshots/
+```
+
+Included screenshots:
+
+```text
+01-start-page.png
+02-select-folio-csv.png
+03-choose-subject-list-source.png
+04-select-email-categories.png
+05-preview-matched-books.png
+06-generate-html-emails-before-export.png
+07-export-complete.png
+08-output-folder-example.png
+09-high-level-workflow.png
+10-classification-logic.png
+```
