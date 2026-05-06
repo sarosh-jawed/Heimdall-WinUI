@@ -46,6 +46,25 @@ instances.subjects
 instances.id
 ```
 
+## Evidence Handling
+
+The Phase 22 review evidence included generated output folders for both workflows:
+
+```text
+ScenarioA-FreshBragi-Output
+ScenarioB-ExistingBragi-Output
+```
+
+The evidence included category HTML files, CannotSortBooks HTML files, RunSummary text files, and generated Bragi subject-list files. The original input CSV and local log files were not committed to the repository.
+
+Logs were verified locally from:
+
+```text
+Documents\Heimdall\Logs
+```
+
+The release evidence documents that logs were created and reviewed without storing local machine-specific or sensitive log files in Git.
+
 ## Scenario A - Fresh Bragi Generation
 
 ### Workflow
@@ -88,6 +107,12 @@ Subject-list mode: GenerateFresh
 Subject-list folder: ScenarioA-FreshBragi-Output\BragiSubjectLists
 Removed category: History
 Removed book title: A history of women in the West / Georges Duby and Michelle Perrot, general editors.
+```
+
+Empty selected categories:
+
+```text
+Selected categories with no matched books did not generate empty HTML files. This is expected behavior because Heimdall only creates category email files when there are matched active books for that category.
 ```
 
 Category output files generated:
@@ -151,6 +176,12 @@ Total records read in RunSummary: 34
 CannotSort count in RunSummary: 4
 Subject-list mode: ExistingFolder
 Existing Bragi folder used: C:\Users\sjawed\Desktop\Heimdall Phase 22 Manual Test\ScenarioA-FreshBragi-Output\BragiSubjectLists
+```
+
+Empty selected categories:
+
+```text
+Selected categories with no matched books did not generate empty HTML files. This is expected behavior because Heimdall only creates category email files when there are matched active books for that category.
 ```
 
 Category output files generated:
