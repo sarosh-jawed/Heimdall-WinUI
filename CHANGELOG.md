@@ -5,6 +5,7 @@ All notable changes to Heimdall WinUI will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Added release-prep documentation cleanup for Phase 23 readiness.
 
 - Added Phase 22 end-to-end manual testing documentation for fresh Bragi generation and existing Bragi folder workflows.
 
@@ -113,6 +114,11 @@ All notable changes to Heimdall WinUI will be documented in this file.
 - Technical exception logging from wizard pages and navigation.
 
 - Added automated regression tests covering official CSV loading, required schema validation, Bragi fresh generation, existing subject-list folder mode, multi-category matching, preview removal, HTML rendering, CannotSort output, and RunSummary export.
+
+### Changed
+- Updated README status from Phase 20 documentation polish to Phase 22 complete and Phase 23 release preparation.
+- Documented that Heimdall skips empty selected categories instead of creating blank HTML email files.
+- Clarified Phase 22 evidence handling and local log verification without committing sensitive local logs.
 
 ### Verified
 - Verified full fresh Bragi generation workflow from CSV selection through HTML export.

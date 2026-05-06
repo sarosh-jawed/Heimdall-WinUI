@@ -21,7 +21,7 @@ The app replaces the legacy console-style Heimdall workflow with a modern WinUI 
 | Supported schema | New FOLIO CSV only |
 | Email fields | Title, Author, Summary |
 | Category selection | Broad category headings only |
-| Output style | Separate HTML file per selected category |
+| Output style | Separate HTML file per selected category with matched active books |
 | Multi-match behavior | A book appears in every matching selected category |
 | Preview | User previews matched books before export |
 | Removal behavior | User can remove individual books from a specific category preview |
@@ -47,7 +47,7 @@ The app replaces the legacy console-style Heimdall workflow with a modern WinUI 
 7. App matches CSV books against selected category subject lists.
 8. App builds a preview grouped by category.
 9. User may remove individual books from specific category previews.
-10. App generates one HTML file per selected category.
+10. App generates one HTML file for each selected category that has matched active books.
 11. App generates CannotSort output for unmatched or missing-subject records.
 12. App generates RunSummary and logs.
 13. App saves all files directly into the selected output folder.
@@ -177,11 +177,13 @@ Removing a book from one category affects only that category's final HTML output
 Export must generate:
 
 ```text
-One HTML file per selected category
+One HTML file for each selected category that contains matched active books
 CannotSortBooksyyyy-MM-dd.html when CannotSort records exist
 RunSummaryyyyy-MM-dd.txt
 Logs
 ```
+
+Category HTML files are generated only for selected categories that contain matched active books. Empty selected categories are intentionally skipped so staff do not receive blank email files.
 
 Export must:
 

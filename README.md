@@ -7,9 +7,9 @@ The app modernizes the original Heimdall workflow into a guided WinUI 3 desktop 
 
 ## Current Status
 
-Development status: Phase 20 documentation polish.
+Development status: Phase 22 complete. Preparing Phase 23 self-contained Windows x64 release.
 
-Completed implementation through Phase 19 includes:
+Completed implementation through Phase 22 includes:
 
 - Official FOLIO CSV loading.
 - Bragi subject-list generation through shared core logic.
@@ -25,6 +25,9 @@ Completed implementation through Phase 19 includes:
 - Friendly error handling.
 - Automated regression tests.
 - Professional WinUI shell polish and app icon assets.
+- GitHub Actions CI for restore, Release build, regression tests, and full test suite.
+- End-to-end manual testing for fresh Bragi generation and existing Bragi folder workflows.
+- Release screenshot documentation.
 
 ## What Heimdall Does
 
@@ -126,6 +129,8 @@ Heimdall does not use first-match-wins behavior. If a book matches multiple sele
 ## Output Files
 
 Generated files are saved directly into the selected output folder.
+
+Heimdall intentionally generates category HTML files only for selected categories that contain matched books. Empty selected categories are skipped to avoid creating blank email files.
 
 Examples:
 
