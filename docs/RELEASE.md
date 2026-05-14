@@ -2,7 +2,7 @@
 
 ## Release Goal
 
-Heimdall should be released as a self-contained Windows x64 desktop app after final testing.
+Heimdall is released as a self-contained Windows x64 desktop app.
 
 Preferred user experience:
 
