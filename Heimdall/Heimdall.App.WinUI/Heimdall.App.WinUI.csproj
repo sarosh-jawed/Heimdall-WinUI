@@ -4,26 +4,29 @@
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>Heimdall.App.WinUI</RootNamespace>
+    <AssemblyName>Heimdall</AssemblyName>
+    <AssemblyTitle>Heimdall</AssemblyTitle>
+    <Product>Heimdall</Product>
+    <ApplicationIcon>Assets\Heimdall.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0</InformationalVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <WinUISDKReferences>false</WinUISDKReferences>
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-    <ItemGroup>
-        <Content Include="Assets\Heimdall.ico" />
-        <Content Include="Assets\Heimdall.png" />
-        <Content Include="Assets\SplashScreen.scale-200.png" />
-        <Content Include="Assets\LockScreenLogo.scale-200.png" />
-        <Content Include="Assets\Square150x150Logo.scale-200.png" />
-        <Content Include="Assets\Square44x44Logo.scale-200.png" />
-        <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-        <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-    </ItemGroup>
+  <ItemGroup>
+      <Content Include="Assets\**\*">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
@@ -64,13 +67,15 @@
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
 
-  <!-- Publish Properties -->
-  <PropertyGroup>
-    <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
-    <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
-    <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
-    <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
-  </PropertyGroup>
+    <!--
+    Keep release publishing conservative for WinUI.
+    Trimming and ReadyToRun can increase runtime risk in desktop apps that use generated XAML,
+    reflection, and framework activation. Revisit only after a stable release is confirmed.
+    -->
+    <PropertyGroup>
+        <PublishReadyToRun>false</PublishReadyToRun>
+        <PublishTrimmed>false</PublishTrimmed>
+    </PropertyGroup>
   <ItemGroup>
     <Content Include="config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

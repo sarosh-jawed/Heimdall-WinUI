@@ -1,4 +1,5 @@
 # Heimdall WinUI
+
 [![ci](https://github.com/sarosh-jawed/Heimdall-WinUI/actions/workflows/ci.yml/badge.svg)](https://github.com/sarosh-jawed/Heimdall-WinUI/actions/workflows/ci.yml)
 
 Heimdall WinUI is a professional Windows desktop application for generating manual HTML new-book email files from official FOLIO CSV book records and Bragi subject-list categories.
@@ -7,9 +8,9 @@ The app modernizes the original Heimdall workflow into a guided WinUI 3 desktop 
 
 ## Current Status
 
-Development status: Phase 22 complete. Preparing Phase 23 self-contained Windows x64 release.
+Development status: `v1.0.0` release prepared for self-contained Windows x64 distribution.
 
-Completed implementation through Phase 22 includes:
+Completed implementation through Phase 23 includes:
 
 - Official FOLIO CSV loading.
 - Bragi subject-list generation through shared core logic.
@@ -28,6 +29,7 @@ Completed implementation through Phase 22 includes:
 - GitHub Actions CI for restore, Release build, regression tests, and full test suite.
 - End-to-end manual testing for fresh Bragi generation and existing Bragi folder workflows.
 - Release screenshot documentation.
+- Final `v1.0.0` release documentation and self-contained Windows x64 release preparation.
 
 ## What Heimdall Does
 
@@ -41,7 +43,7 @@ The app combines:
 
 It then creates:
 
-- One HTML file per selected category.
+- One HTML file per selected category that contains matched books.
 - A CannotSort HTML file for unmatched or missing-subject records.
 - A RunSummary text file.
 - Technical logs for troubleshooting.
@@ -197,26 +199,36 @@ Run the full test suite:
 dotnet test .\Heimdall\Heimdall.slnx -c Debug
 ```
 
-## Release Instructions
-
-The intended release path is a self-contained Windows x64 artifact.
-
-Release preparation is handled in a later phase. Before release:
+For release verification:
 
 ```powershell
 dotnet clean .\Heimdall\Heimdall.slnx
 dotnet restore .\Heimdall\Heimdall.slnx
 dotnet build .\Heimdall\Heimdall.slnx -c Release
+dotnet test .\Heimdall\Heimdall.slnx -c Release --filter FullyQualifiedName~Regression
 dotnet test .\Heimdall\Heimdall.slnx -c Release
 ```
 
-The final release artifact should be named similar to:
+## Release Instructions
+
+The current release target is a self-contained Windows x64 ZIP:
 
 ```text
 Heimdall-v1.0.0-win-x64.zip
 ```
 
 Users should extract the full ZIP before running the app.
+
+```text
+1. Download Heimdall-v1.0.0-win-x64.zip.
+2. Right-click the ZIP and choose Extract All.
+3. Open the extracted folder.
+4. Run Heimdall.exe.
+5. Do not run the app from inside the ZIP.
+6. Do not move only Heimdall.exe by itself. Keep the extracted folder together.
+```
+
+Release artifacts are generated locally and attached to the GitHub release. They are not committed to the repository.
 
 ## Current Limitations
 
@@ -236,14 +248,12 @@ The following are intentionally out of scope for the current version:
 
 Possible future enhancements:
 
-- Self-contained release automation.
-- GitHub Actions CI.
-- Additional screenshot documentation.
 - User guide with real workflow examples.
 - Optional book image or metadata enrichment.
 - Optional direct email integration after staff review and approval.
 - Installer or MSIX distribution option.
 - Accessibility review.
+- Additional automated UI-level test coverage.
 
 ## Documentation
 
@@ -255,4 +265,6 @@ docs/ARCHITECTURE.md
 docs/TEST-CASES.md
 docs/RELEASE.md
 docs/SCREENSHOTS.md
+docs/END-TO-END-TESTING.md
+docs/RELEASE-NOTES-v1.0.0.md
 ```
